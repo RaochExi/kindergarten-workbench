@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>九小附属幼儿园·班级工作台（演示版）</title>
+<style>
+:root{
+  --font:"Inter","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI Variable Text","Segoe UI","PingFang SC","HarmonyOS Sans SC","MiSans","Source Han Sans SC","Noto Sans SC","Microsoft YaHei UI","Microsoft YaHei",sans-serif;
+
+  --bg:#f5f6f8;
+  --surface:#ffffff;
+  --surface-2:#fafbfc;
+  --surface-3:#f4f6f9;
+  --line:#e7eaef;
+  --line-soft:#f0f2f5;
+  --line-strong:#d5dae1;
+
+  --t1:#0d1526;
+  --t2:#475569;
+  --t3:#74808f;
+  --t4:#9aa5b1;
+
+  --accent:#2563eb;
+  --accent-hover:#1d4ed8;
+  --accent-soft:#eef4ff;
+  --green:#0d9263;
+  --green-soft:#e8f6f0;
+  --amber:#b07219;
+  --amber-soft:#fdf4e3;
+  --red:#cf3f38;
+  --red-soft:#fdedec;
+
+  --r-lg:12px;
+  --r:10px;
+  --r-sm:8px;
+  --r-xs:6px;
+
+  --sh-1:0 1px 2px rgba(13,21,38,.04), 0 1px 3px rgba(13,21,38,.03);
+  --sh-2:0 2px 6px rgba(13,21,38,.05), 0 8px 20px rgba(13,21,38,.05);
+  --sh-3:0 12px 36px rgba(13,21,38,.12);
+  --ring:0 0 0 3px rgba(37,99,235,.13);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--t1);
+  font-family:var(--font);
+  font-size:14px;line-height:1.6;
+  letter-spacing:.005em;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+}
+svg{display:block;flex:none}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none;font-family:inherit}
+input,select,textarea{font:inherit;color:inherit;font-family:inherit}
+::selection{background:rgba(37,99,235,.16)}
+
+/* ---------- layout ---------- */
+.app{display:flex;height:100vh;overflow:hidden}
+.side{
+  width:230px;flex:none;background:var(--surface);
+  border-right:1px solid var(--line);
+  display:flex;flex-direction:column;padding:20px 12px 12px;gap:2px;
+}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px 20px}
+.brand-mark{
+  width:32px;height:32px;border-radius:9px;flex:none;
+  background:linear-gradient(140deg,#3b82f6,#1d4ed8);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 6px rgba(37,99,235,.28);
+}
+.brand-name{font-size:14.5px;font-weight:650;letter-spacing:-.01em}
+.brand-sub{font-size:11px;color:var(--t4);letter-spacing:.04em;font-weight:500}
+.nav-group{padding:16px 10px 6px;font-size:10.5px;color:var(--t4);letter-spacing:.1em;font-weight:650}
+.nav-item{
+  position:relative;display:flex;align-items:center;gap:10px;
+  height:36px;padding:0 10px;border-radius:var(--r-sm);
+  color:var(--t2);font-size:13.5px;font-weight:500;
+  transition:background .14s,color .14s;width:100%;text-align:left;
+}
+.nav-item:hover{background:var(--surface-3);color:var(--t1)}
+.nav-item.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.nav-item.on::before{
+  content:"";position:absolute;left:-12px;top:8px;bottom:8px;width:3px;
+  background:var(--accent);border-radius:0 3px 3px 0;
+}
+.nav-item .badge{
+  margin-left:auto;background:var(--red);color:#fff;font-size:10.5px;font-weight:650;
+  padding:0 6px;height:17px;line-height:17px;border-radius:9px;
+  box-shadow:0 1px 3px rgba(207,63,56,.3);
+}
+.side-foot{
+  margin-top:auto;padding:12px 10px;border-top:1px solid var(--line-soft);
+  font-size:11px;color:var(--t4);line-height:1.75;
+}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{
+  height:60px;flex:none;background:var(--surface);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;padding:0 24px;gap:14px;
+}
+.topbar h1{font-size:16px;font-weight:650;letter-spacing:-.015em}
+.topbar .meta{
+  font-size:12.5px;color:var(--t3);padding-left:14px;
+  border-left:1px solid var(--line);margin-left:2px;
+}
+.spacer{flex:1}
+.view{flex:1;overflow-y:auto;padding:24px}
+.view::-webkit-scrollbar{width:11px;height:11px}
+.view::-webkit-scrollbar-track{background:transparent}
+.view::-webkit-scrollbar-thumb{background:#dbe0e6;border:3px solid var(--bg);border-radius:8px}
+.view::-webkit-scrollbar-thumb:hover{background:#c8cfd7}
+
+/* ---------- controls ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;
+  border-radius:var(--r-sm);background:var(--surface);border:1px solid var(--line-strong);
+  color:var(--t2);font-size:13px;font-weight:550;
+  transition:background .14s,border-color .14s,box-shadow .14s,transform .1s;white-space:nowrap;
+}
+.btn:hover{background:var(--surface-2);border-color:#c3cad3;color:var(--t1)}
+.btn:active{transform:translateY(.5px)}
+.btn.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;
+  box-shadow:0 1px 2px rgba(37,99,235,.24);
+}
+.btn.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover);color:#fff;box-shadow:0 2px 8px rgba(37,99,235,.28)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--surface-3);border-color:transparent}
+.btn.sm{height:28px;padding:0 11px;font-size:12.5px;border-radius:var(--r-xs)}
+.btn:focus-visible{outline:none;box-shadow:var(--ring)}
+
+.input,.select,.textarea{
+  width:100%;height:36px;padding:0 12px;border-radius:var(--r-sm);
+  background:#fff;border:1px solid var(--line-strong);color:var(--t1);
+  transition:border-color .14s,box-shadow .14s;
+}
+.textarea{height:auto;padding:9px 12px;resize:vertical;line-height:1.7}
+.input::placeholder,.textarea::placeholder{color:var(--t4)}
+.input:focus,.select:focus,.textarea:focus{
+  outline:none;border-color:var(--accent);box-shadow:var(--ring);
+}
+.select{
+  appearance:none;padding-right:30px;cursor:pointer;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2374808f' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right 10px center;
+}
+.search{position:relative;max-width:300px;flex:none}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none}
+.search .input{padding-left:33px}
+
+/* ---------- cards ---------- */
+.card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-lg);box-shadow:var(--sh-1);
+}
+.card-h{
+  display:flex;align-items:center;gap:10px;padding:15px 18px;
+  border-bottom:1px solid var(--line-soft);min-height:52px;
+}
+.card-h h3{font-size:14px;font-weight:650;letter-spacing:-.01em}
+.card-h .sub{font-size:12px;color:var(--t4)}
+.card-b{padding:18px}
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g21{grid-template-columns:1.9fr 1fr}
+
+.stat{padding:17px 18px;transition:box-shadow .16s,border-color .16s,transform .16s}
+.stat:hover{box-shadow:var(--sh-2);border-color:var(--line-strong);transform:translateY(-1px)}
+.stat-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.stat .lbl{font-size:12.5px;color:var(--t3);font-weight:500}
+.stat-ico{
+  width:30px;height:30px;border-radius:8px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+}
+.stat-ico.g{background:var(--green-soft);color:var(--green)}
+.stat-ico.a{background:var(--amber-soft);color:var(--amber)}
+.stat-ico.r{background:var(--red-soft);color:var(--red)}
+.stat-ico.b{background:var(--accent-soft);color:var(--accent)}
+.stat-ico.n{background:var(--surface-3);color:var(--t3)}
+.stat .num{
+  font-size:31px;font-weight:680;letter-spacing:-.035em;margin-top:10px;
+  line-height:1.05;font-variant-numeric:tabular-nums;
+}
+.stat .num .unit{font-size:13px;font-weight:500;color:var(--t3);margin-left:3px;letter-spacing:0}
+.stat .hint{font-size:11.5px;color:var(--t4);margin-top:5px}
+
+.pill{
+  display:inline-flex;align-items:center;gap:4px;height:21px;padding:0 8px;
+  border-radius:var(--r-xs);font-size:11.5px;font-weight:600;letter-spacing:.01em;
+}
+.pill.g{background:var(--green-soft);color:var(--green)}
+.pill.a{background:var(--amber-soft);color:var(--amber)}
+.pill.r{background:var(--red-soft);color:var(--red)}
+.pill.b{background:var(--accent-soft);color:var(--accent)}
+.pill.n{background:var(--surface-3);color:var(--t3)}
+
+/* ---------- table ---------- */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{
+  text-align:left;font-size:12px;font-weight:600;color:var(--t3);letter-spacing:.03em;
+  padding:10px 16px;background:var(--surface-2);border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+.tbl td{padding:12px 16px;border-bottom:1px solid var(--line-soft);font-size:13.5px;vertical-align:middle}
+.tbl tbody tr{transition:background .12s}
+.tbl tbody tr:nth-child(even){background:#fbfcfd}
+.tbl tbody tr:hover{background:#f3f7fe}
+.tbl tbody tr:last-child td{border-bottom:none}
+.tbl .mono{font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.tbl td.mono{white-space:nowrap}
+
+.ava{
+  width:32px;height:32px;border-radius:50%;flex:none;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;color:#fff;letter-spacing:-.02em;
+}
+.ava.m{background:linear-gradient(140deg,#6b9df5,#3b7de0)}
+.ava.f{background:linear-gradient(140deg,#ef90a4,#e0708c)}
+.name-cell{display:flex;align-items:center;gap:10px}
+
+/* ---------- attendance ---------- */
+.att-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(156px,1fr));gap:12px}
+.att-card{
+  border:1px solid var(--line);border-radius:var(--r);padding:12px 13px;background:var(--surface);
+  transition:border-color .14s,box-shadow .14s,transform .14s;text-align:left;width:100%;
+}
+.att-card:hover{border-color:var(--line-strong);box-shadow:var(--sh-2);transform:translateY(-1px)}
+.att-card .top{display:flex;align-items:center;gap:9px}
+.att-card .nm{font-size:13.5px;font-weight:600;letter-spacing:-.01em}
+.att-card .st{margin-top:10px;display:flex;gap:5px}
+.chip{
+  flex:1;height:28px;border-radius:7px;font-size:12px;font-weight:600;color:var(--t3);
+  border:1px solid var(--line);background:#fff;
+  display:flex;align-items:center;justify-content:center;transition:.12s;
+}
+.chip:hover{border-color:var(--line-strong);background:var(--surface-3)}
+.chip.on{color:#fff;border-color:transparent;box-shadow:0 1px 3px rgba(13,21,38,.14)}
+.chip.on[data-s="present"]{background:var(--green)}
+.chip.on[data-s="late"]{background:var(--amber)}
+.chip.on[data-s="leave"]{background:var(--accent)}
+.chip.on[data-s="absent"]{background:var(--red)}
+
+/* ---------- misc ---------- */
+.seg{display:inline-flex;background:var(--surface-3);border-radius:9px;padding:3px;gap:2px}
+.seg button{height:28px;padding:0 13px;border-radius:7px;font-size:12.5px;font-weight:550;color:var(--t3)}
+.seg button.on{background:#fff;color:var(--t1);box-shadow:var(--sh-1)}
+
+.empty{padding:56px 20px;text-align:center;color:var(--t4);font-size:13px}
+.empty svg{margin:0 auto 14px;opacity:.45}
+
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;color:var(--t2);margin-bottom:6px;font-weight:550}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--t3)}
+.tiny{font-size:11.5px}
+.sec-t{
+  font-size:10.5px;color:var(--t4);font-weight:650;letter-spacing:.1em;
+  margin:22px 0 10px;
+}
+
+/* ---------- drawer ---------- */
+.mask{position:fixed;inset:0;background:rgba(13,21,38,.32);opacity:0;pointer-events:none;transition:.2s;z-index:40;backdrop-filter:blur(1px)}
+.mask.on{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;right:0;height:100%;width:440px;background:var(--surface);z-index:50;
+  border-left:1px solid var(--line);transform:translateX(100%);
+  transition:transform .24s cubic-bezier(.32,.72,.29,1);
+  display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(13,21,38,.10);
+}
+.drawer.on{transform:translateX(0)}
+.drawer-h{padding:18px 20px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:12px;min-height:74px}
+.drawer-b{flex:1;overflow-y:auto;padding:20px}
+.drawer-b::-webkit-scrollbar{width:9px}
+.drawer-b::-webkit-scrollbar-thumb{background:#dde1e7;border:3px solid #fff;border-radius:6px}
+.drawer-f{padding:14px 20px;border-top:1px solid var(--line-soft);display:flex;gap:10px;background:var(--surface-2)}
+.kv{display:grid;grid-template-columns:84px 1fr;gap:10px 14px;font-size:13px;margin-bottom:6px}
+.kv dt{color:var(--t3);font-size:12.5px}
+.kv dd{color:var(--t1);word-break:break-all}
+
+/* ---------- chart ---------- */
+.chart-wrap{position:relative;padding:4px 0 0}
+.chart-plot{position:relative;height:118px}
+.chart-grid{position:absolute;inset:18px 0 26px;pointer-events:none}
+.chart-grid i{position:absolute;left:0;right:0;border-top:1px dashed #eef1f5}
+.chart-plot>.bars{position:relative;z-index:1;display:flex;gap:8px;height:100%}
+.bar-col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;flex:1;height:100%}
+.bar{
+  width:100%;max-width:38px;border-radius:5px 5px 3px 3px;min-height:4px;
+  background:linear-gradient(180deg,#cfdae7,#c2cfdd);transition:.15s;
+}
+.bar-col:hover .bar{background:linear-gradient(180deg,#a9bed9,#9cb2d1)}
+.bar-col.today .bar{background:linear-gradient(180deg,#4b82f0,#2563eb);box-shadow:0 2px 8px rgba(37,99,235,.28)}
+.bar-val{font-size:10.5px;color:var(--t3);font-variant-numeric:tabular-nums;margin-bottom:5px;line-height:1}
+.bar-day{font-size:10.5px;color:var(--t4);font-variant-numeric:tabular-nums;margin-top:8px;line-height:1}
+.bar-col.today .bar-val,.bar-col.today .bar-day{color:var(--accent);font-weight:650}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:#111c30;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;
+  box-shadow:var(--sh-3);opacity:0;pointer-events:none;transition:.22s cubic-bezier(.32,.72,.29,1);z-index:99;
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:1180px){
+  .g4{grid-template-columns:repeat(2,1fr)}
+  .g21,.g3{grid-template-columns:1fr}
+}
+@media (max-width:900px){
+  .g2{grid-template-columns:1fr}
+  .side{width:64px;padding:20px 8px}
+  .brand-name,.brand-sub,.nav-group,.side-foot,.nav-item span:not(.badge){display:none}
+  .nav-item{justify-content:center}
+}
+
+.plan-item{padding:10px 0;border-bottom:1px solid var(--line-soft)}
+.plan-item:last-child{border-bottom:none}
+.sched-input{
+  width:100%;height:30px;border:1px solid transparent;background:transparent;
+  border-radius:7px;padding:0 8px;font-size:12.5px;color:var(--t1);transition:.12s;
+}
+.sched-input:hover{background:var(--surface-3)}
+.sched-input:focus{outline:none;background:#fff;border-color:var(--accent);box-shadow:var(--ring)}
+.mat-text{font-size:13px;color:var(--t2);white-space:pre-line;line-height:1.75}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- sidebar -->
+  <aside class="side">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21v-7.5"/>
+          <path d="M12 13.5C12 9.7 9.4 7.5 6 7.7c-.4 3.6 2.4 5.8 6 5.8Z"/>
+          <path d="M12 13.5c0-3.8 2.6-6 6-5.8.4 3.6-2.4 5.8-6 5.8Z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">九小附属幼儿园</div>
+        <div class="brand-sub">班级工作台</div>
+      </div>
+    </div>
+
+    <div class="nav-group">日常</div>
+    <button class="nav-item on" data-view="home">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg>
+      今日概览
+    </button>
+    <button class="nav-item" data-view="roster">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20"/><circle cx="10" cy="8" r="3.2"/><path d="M20 20v-1.5a3.5 3.5 0 0 0-2.6-3.4"/><path d="M15.5 4.6a3.2 3.2 0 0 1 0 6.2"/></svg>
+      幼儿名册
+    </button>
+    <button class="nav-item" data-view="attend">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M8 2.8v3.4M16 2.8v3.4M3 10h18"/><path d="M8.8 15.2l2.2 2.2 4.2-4.4"/></svg>
+      晨检点名
+    </button>
+    <button class="nav-item" data-view="obs">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5h11l5 5v10a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19.5v-15Z"/><path d="M14.5 4.5v5.5H20"/><path d="M8 14h8M8 17.5h5"/></svg>
+      观察记录
+    </button>
+
+    <div class="nav-group">教学</div>
+    <button class="nav-item" data-view="plan">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3.5H6.5A1.5 1.5 0 0 0 5 5v14a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19V5a1.5 1.5 0 0 0-1.5-1.5H15"/><rect x="9" y="2.2" width="6" height="3.2" rx="1"/><path d="M8.5 11h7M8.5 14.5h4.5"/></svg>
+      备课中心
+    </button>
+    <button class="nav-item" data-view="lib">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l2 2.5h7A1.5 1.5 0 0 1 19 10v7a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 3 17v-9.5Z"/></svg>
+      资料库
+    </button>
+
+    <div class="nav-group">家园</div>
+    <button class="nav-item" data-view="notice">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.5 7.5-2.5 7.5h17S18 14.5 18 8.5Z"/><path d="M10.3 20a2 2 0 0 0 3.4 0"/></svg>
+      通知与沟通
+    </button>
+    <button class="nav-item" data-view="health">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.4 5.6a5.4 5.4 0 0 0-7.7 0L12 6.3l-.7-.7a5.4 5.4 0 1 0-7.7 7.7L12 21.5l8.4-8.2a5.4 5.4 0 0 0 0-7.7Z"/><path d="M3.5 12.5h4l1.5-2.5 2 4 1.5-2.5h4"/></svg>
+      健康与接种
+      <span class="badge" id="navHealthBadge" style="display:none">0</span>
+    </button>
+
+    <div class="nav-group">效率</div>
+    <button class="nav-item" data-view="tool">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0 5.4 5.4l-8 8a3.8 3.8 0 0 1-5.4-5.4l8-8Z"/><path d="M6 3v3M4.5 4.5h3"/></svg>
+      小工具
+    </button>
+    <button class="nav-item" data-view="import">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3.5"/><path d="M8 7.5 12 3.5l4 4"/><path d="M4 15v3.5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V15"/></svg>
+      数据导入导出
+    </button>
+
+    <div class="side-foot">
+      数据保存在本机浏览器<br>换电脑请先导出备份
+    </div>
+  </aside>
+
+  <!-- main -->
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <h1 id="pageTitle">今日概览</h1>
+      </div>
+      <span class="meta" id="pageMeta"></span>
+      <div class="spacer"></div>
+      <select class="select" id="classSel" style="width:118px">
+        <option>大二班</option><option>大三班</option><option>大一班</option><option>大四班</option>
+      </select>
+      <button class="btn" onclick="exportJSON()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5V15"/><path d="M8 11.5 12 15.5l4-4"/><path d="M4 17v1.5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V17"/></svg>
+        备份
+      </button>
+    </header>
+    <div style="background:#eff4ff;border-bottom:1px solid #d9e4fb;color:#1d4ed8;font-size:12.5px;padding:8px 24px;display:flex;align-items:center;gap:8px;flex:none">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4.5"/><path d="M12 8h.01"/></svg>
+演示版：页面内幼儿与家长信息均为示例数据，非真实信息。点开即可试用，数据只保存在你自己的浏览器中，不会上传。
+</div>
+    <div class="view" id="view"></div>
+  </div>
+</div>
+
+<div class="mask" id="mask" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-h" id="drawerH"></div>
+  <div class="drawer-b" id="drawerB"></div>
+  <div class="drawer-f" id="drawerF"></div>
+</aside>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ state ============ */
+const KEY='kg_workbench_v1';
+const SURNAMES='王李张刘陈杨黄赵周吴徐孙马朱胡林郭何高罗郑梁谢宋唐许韩冯邓曹彭曾肖田董袁潘蒋蔡余杜叶程苏魏吕丁任卢姚'.split('');
+const GIVEN_M=['子轩','浩然','俊熙','宇泽','铭轩','梓睿','一鸣','嘉佑','泽楷','瑞泽','晨曦','思远','宇航','博文','皓宇','锦程','乐阳','知远','沐辰','允诺'];
+const GIVEN_F=['梓涵','诗涵','雨欣','欣怡','子萱','梦琪','嘉怡','语嫣','若曦','安然','书瑶','一诺','清妍','宛清','思彤','慧敏','雅静','可馨','沐橙','知微'];
+const DOMAINS=['健康与动作','语言与表达','社会与交往','科学与探究','艺术与表现'];
+
+let S={children:[],attend:{},obs:[],comms:[],tpl:[],duty:[],plan:{},lessons:[],schedule:[],files:[],materials:[]};
+
+function rid(p){return p+'_'+Math.random().toString(36).slice(2,9);}
+function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function addDays(ds,n){const d=new Date(ds);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);}
+function daysBetween(a,b){return Math.round((new Date(b)-new Date(a))/86400000);}
+function age(birth){if(!birth)return '';const d=daysBetween(birth,today());return Math.floor(d/365)+'岁'+Math.floor((d%365)/30)+'个月';}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+
+/* ---------- 默认教案 ---------- */
+function defaultLessons(){
+  return [
+    {id:rid('l'),title:'认识秋天',domain:'科学与探究',age:'大班',minutes:25,date:addDays(today(),-6),
+     goal:'观察秋季自然变化，能用 2-3 个词语描述秋天特征；萌发爱护自然的情感。',
+     prep:'秋叶标本若干、秋天图片 PPT、记录表、彩笔。',
+     steps:'一、导入（5 分钟）\n出示一片落叶，提问：树叶为什么变黄了？\n\n二、观察讨论（10 分钟）\n分组观察树叶标本，比较颜色、形状、触感，用记录表画出发现。\n\n三、分享小结（7 分钟）\n每组说一个发现，教师归纳秋天的三个特征。\n\n四、延伸（3 分钟）\n户外捡落叶，制作树叶贴画。',
+     reflection:'幼儿对落叶兴趣高，但描述词汇偏少，下次可提前教“枯黄、飘落、丰收”等词。'},
+    {id:rid('l'),title:'有趣的影子',domain:'科学与探究',age:'大班',minutes:25,date:addDays(today(),-3),
+     goal:'感知影子产生需要光，探索影子与光源位置的关系。',
+     prep:'手电筒、白布、小动物玩具、记录表。',
+     steps:'一、猜谜导入（3 分钟）\n“我走它也走，我停它也停”——猜是什么。\n\n二、探索（12 分钟）\n分组用手电筒照玩具，观察影子方向变化；尝试让影子变大变小。\n\n三、记录交流（7 分钟）\n画下自己的发现，说说什么时候影子最长。\n\n四、游戏（3 分钟）\n手影游戏：变出小狗、小鸟。',
+     reflection:'手电筒数量不足，下次分两批进行。'},
+    {id:rid('l'),title:'小熊请客',domain:'语言与表达',age:'大班',minutes:25,date:addDays(today(),-1),
+     goal:'理解故事内容，能复述主要情节；学习使用礼貌用语。',
+     prep:'故事 PPT、动物头饰、小熊家场景道具。',
+     steps:'一、出示道具导入（3 分钟）\n今天小熊要请客，会请谁呢？\n\n二、讲述故事（8 分钟）\n配合 PPT 讲述，讲到关键处停顿提问。\n\n三、角色表演（10 分钟）\n幼儿戴头饰分角色表演，练习“请进”“谢谢”“不用谢”。\n\n四、小结（4 分钟）\n说说怎样做有礼貌的小客人。',
+     reflection:'表演环节秩序较乱，需提前明确角色轮换规则。'}
+  ];
+}
+/* ---------- 默认作息表 ---------- */
+function defaultSchedule(){
+  const rows=[
+    ['08:00-08:30','晨间活动 · 区域自选'],
+    ['08:30-09:00','早操 · 户外锻炼'],
+    ['09:00-09:30','集体教学活动（一）'],
+    ['09:30-10:00','盥洗 · 早点'],
+    ['10:00-10:30','集体教学活动（二）'],
+    ['10:30-11:00','户外游戏'],
+    ['11:00-11:40','餐前准备 · 午餐'],
+    ['11:40-12:00','散步 · 睡前安静活动'],
+    ['12:00-14:20','午睡'],
+    ['14:20-15:00','起床整理 · 午点'],
+    ['15:00-15:40','游戏活动 · 区域活动'],
+    ['15:40-16:10','户外体育活动'],
+    ['16:10-16:30','离园准备']
+  ];
+  return rows.map(r=>({time:r[0],cells:[r[1],r[1],r[1],r[1],r[1]]}));
+}
+/* ---------- 默认教学素材 ---------- */
+function defaultMaterials(){
+  const M=(cat,title,text)=>({id:rid('m'),cat:cat,title:title,text:text,builtin:true});
+  return [
+    M('常规口令','集合口令','一二三，快坐好；\n三二一，请安静。\n\n小眼睛——看老师！'),
+    M('常规口令','坐姿口令','小手——放放好\n小脚——并并拢\n小背——挺挺直\n小眼睛——看前方'),
+    M('常规口令','排队口令','小手搭肩膀，小脚踏踏步，\n一个跟着一个走，不推也不挤。'),
+    M('常规口令','安静口令','小耳朵——仔细听\n小嘴巴——不说话\n要说话——先举手'),
+    M('手指谣','小手变变变','一个手指点点点，\n两个手指剪剪剪，\n三个手指弯弯弯，\n四个手指叉叉叉，\n五个手指开花了。'),
+    M('手指谣','手指歌','大拇哥，二拇弟，\n中三娘，四小弟，\n小妞妞，来看戏。\n手心手背，心肝宝贝。'),
+    M('手指谣','五只小猴','五只小猴荡秋千，嘲笑鳄鱼被水淹，\n鳄鱼来了，鳄鱼来了，嗷呜嗷呜——\n（依次递减到一只）'),
+    M('手指游戏','小手爬','爬呀爬呀爬呀爬，一爬爬到头顶上；\n爬呀爬呀爬呀爬，一爬爬到小脚上。\n（配合儿歌在身上移动双手）'),
+    M('手指游戏','石头剪刀布','石头剪刀布，石头剪刀布，\n一把剪刀一块石头，变成小白兔；\n一把剪刀一块布，抱抱小袋鼠。'),
+    M('儿歌','找朋友','找呀找呀找朋友，\n找到一个好朋友，\n敬个礼呀握握手，\n你是我的好朋友。'),
+    M('儿歌','数鸭子','门前大桥下，游过一群鸭，\n快来快来数一数，二四六七八。'),
+    M('儿歌','春天在哪里','春天在哪里呀，春天在哪里？\n春天在那青翠的山林里。\n这里有红花呀，这里有绿草，\n还有那会唱歌的小黄鹂。'),
+    M('儿歌','小星星','一闪一闪亮晶晶，\n满天都是小星星，\n挂在天上放光明，\n好像许多小眼睛。'),
+    M('安静游戏','听音辨物','老师用不同物品（杯子、积木、纸张）发出声音，\n幼儿闭眼举手猜是什么发出的声音。\n作用：训练专注力与听觉分辨。'),
+    M('安静游戏','传话游戏','老师对第一名幼儿耳语一句话，依次传递，\n最后一名大声说出，比对是否一致。\n作用：训练倾听与记忆，适合过渡环节。'),
+    M('安静游戏','木头人','音乐响时自由舞动，音乐一停立刻定住不能动，\n动了的小朋友表演一个小节目。'),
+    M('户外游戏','丢手绢','围成圆圈蹲坐，一人在圈外绕行悄悄放手绢，\n被发现者起身追逐，跑完一圈坐下为胜。'),
+    M('户外游戏','老鹰捉小鸡','一人当老鹰，一人当母鸡，其余当小鸡依次拉衣角，\n母鸡张开双臂阻挡，被抓到的小鸡轮换角色。'),
+    M('户外游戏','接力传球','分两队，用球从队首传到队尾再传回，\n先完成且球不落地的队伍获胜。\n作用：练习协作与手眼协调。')
+  ];
+}
+/* ---------- seed ---------- */
+function seedAux(){
+  const a={};a[today()]={};
+  S.children.forEach((c,i)=>{ if(i%7===0)return; a[today()][c.id]= i%13===0?'leave' : (i%11===0?'late':'present'); });
+  S.attend=a;
+  if(S.children[0])S.obs=[
+    {id:rid('o'),cid:S.children[0].id,date:today(),domain:'社会与交往',text:'自由活动时主动邀请同伴一起搭积木，能轮流使用材料。',level:'良好'},
+    {id:rid('o'),cid:S.children[1]?S.children[1].id:S.children[0].id,date:addDays(today(),-1),domain:'语言与表达',text:'能完整复述昨天听过的绘本情节，表达较连贯。',level:'优秀'},
+    {id:rid('o'),cid:S.children[2]?S.children[2].id:S.children[0].id,date:addDays(today(),-2),domain:'健康与动作',text:'单脚站立时间较短，建议加强平衡练习。',level:'需关注'}
+  ]; else S.obs=[];
+  S.comms=[];
+  S.tpl=[
+    {id:'t1',name:'放假通知',tpl:'各位家长好：\n\n接园所通知，{班级}将于 {日期} 起放假，{返园日期} 正常返园。请家长在假期中注意幼儿安全，合理安排作息。\n\n祝大家假期愉快！\n{班级}  {老师}'},
+    {id:'t2',name:'亲子活动邀请',tpl:'各位家长：\n\n{班级}定于 {日期} 开展亲子活动，地点：{地点}。请每位幼儿由一名家长陪同参加，当日上午正常时间入园。\n\n{班级}  {老师}'},
+    {id:'t3',name:'物品准备提醒',tpl:'家长您好：\n\n近期天气转凉，请为幼儿准备 {物品}，并写上姓名。下周一起班级将开展 {事项} 主题活动，需要家长配合收集 {物品}。\n\n谢谢配合！\n{班级}  {老师}'},
+    {id:'t4',name:'接种证催交',tpl:'家长您好：\n\n{幼儿} 的预防接种证查验还未提交，请于 {日期} 前将接种证拍照或交纸质件至班级老师处。逾期将影响园所汇总上报。\n\n{班级}  {老师}'}
+  ];
+  S.duty=[];
+  S.plan={};
+  S.lessons=defaultLessons();
+  S.schedule=defaultSchedule();
+  S.files=[];
+  S.materials=defaultMaterials();
+}
+function seed(){
+  const list=[];
+  for(let i=0;i<38;i++){
+    const male=i%2===0;
+    list.push({
+      id:rid('c'),name:SURNAMES[(i*7)%SURNAMES.length]+(male?GIVEN_M[i%GIVEN_M.length]:GIVEN_F[i%GIVEN_F.length]),
+      pinyin:'',sex:male?'男':'女',
+      birth:'2019-'+String((i%12)+1).padStart(2,'0')+'-'+String((i*3%27)+1).padStart(2,'0'),
+      nation:'汉',idcard:'',
+      mother:{name:SURNAMES[(i*3)%SURNAMES.length]+'女士',phone:'1'+['3','5','8'][i%3]+String(700000000+i*1379).slice(0,9)},
+      father:{name:SURNAMES[(i*5)%SURNAMES.length]+'先生',phone:'1'+['3','5','8'][(i+1)%3]+String(710000000+i*2377).slice(0,9)},
+      addr:'示例社区'+(i%6+1)+'期'+((i%18)+1)+'号楼'+((i%6)+1)+'0'+(i%4+1),
+      allergy:'无',pickup:'父母',note:'',vaccineDone:i%7!==0,checkDue:''
+    });
+  }
+  S.children=list;seedAux();
+}
+function seedReal(){
+  let base=null;
+  try{ base=JSON.parse(document.getElementById('seedData').textContent); }catch(e){}
+  if(base&&base.length){
+    S.children=base.map(r=>Object.assign({id:rid('c'),pinyin:'',idcard:'',allergy:'无',pickup:'父母',note:'',vaccineDone:false,checkDue:''},r));
+  }else{ seed();return; }
+  seedAux();
+}
+function load(){
+  try{
+    const r=localStorage.getItem(KEY);
+    if(r){const d=JSON.parse(r);if(d&&d.children&&d.children.length){
+      S=d;
+      if(!S.lessons)S.lessons=defaultLessons();
+      if(!S.schedule)S.schedule=defaultSchedule();
+      if(!S.materials)S.materials=defaultMaterials();
+      if(!S.plan)S.plan={};
+      if(!S.files)S.files=[];
+      return;
+    }}
+  }catch(e){}
+  seedReal();save();
+}
+
+
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+/* ============ toast ============ */
+let tt;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('on');
+  clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('on'),1900);
+}
+
+/* ============ router ============ */
+const TITLES={home:'今日概览',roster:'幼儿名册',attend:'晨检点名',obs:'观察记录',plan:'备课中心',lib:'资料库',notice:'通知与沟通',health:'健康与接种',tool:'小工具',import:'数据导入导出'};
+let curView='home';
+function go(v){
+  curView=v;
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('on',b.dataset.view===v));
+  document.getElementById('pageTitle').textContent=TITLES[v]||'';
+  render();
+  document.getElementById('view').scrollTop=0;
+}
+function render(){
+  _html='';
+  const meta=document.getElementById('pageMeta');
+  const cls=document.getElementById('classSel').value;
+  const d=new Date();const wk=['日','一','二','三','四','五','六'][d.getDay()];
+  meta.textContent=cls+' · '+today()+' 周'+wk+' · 在册 '+S.children.length+' 人';
+  ({home:vHome,roster:vRoster,attend:vAttend,obs:vObs,plan:vPlan,lib:vLib,notice:vNotice,health:vHealth,tool:vTool,import:vImport})[curView]();
+  document.getElementById('view').innerHTML=_html;
+  const pend=S.children.filter(c=>!c.vaccineDone||(c.checkDue&&daysBetween(today(),c.checkDue)<0)).length;
+  const bd=document.getElementById('navHealthBadge');
+  bd.style.display=pend?'inline-flex':'none';bd.textContent=pend;
+}
+let _html='';
+function W(s){_html+=s;}
+
+/* ============ 概览 ============ */
+function attOf(d){return S.attend[d]||{};}
+function todayStat(){
+  const a=attOf(today());
+  let p=0,l=0,le=0,ab=0;
+  S.children.forEach(c=>{const s=a[c.id];if(s==='present')p++;else if(s==='late')l++;else if(s==='leave')le++;else ab++;});
+  return {p,l,le,ab,marked:S.children.filter(c=>a[c.id]).length};
+}
+function vHome(){
+  const t=todayStat();
+  const cls=document.getElementById('classSel').value;
+  const unvacc=S.children.filter(c=>!c.vaccineDone);
+  const overdue=S.children.filter(c=>c.checkDue&&daysBetween(today(),c.checkDue)<0);
+  const pending=S.children.length-t.marked;
+  const recent=S.obs.slice().sort((x,y)=>y.date<x.date?-1:1).slice(0,5);
+
+  W('<div class="grid g4" style="margin-bottom:14px">');
+  W(cardStat('今日出勤',t.p,'在册 '+S.children.length+' 人','已点 '+(t.p+t.l+t.le)+' 人',t.p+t.l>0?'g':'n','users'));
+  W(cardStat('迟到',t.l,'人',t.l>0?'需补记录':'无','a','clock'));
+  W(cardStat('请假',t.le,'人',t.le>0?'已登记':'无','b','leave'));
+  W(cardStat('未点名',pending,'人',pending>0?'待完成':'全部完成',pending>0?'r':'g','alert'));
+  W('</div>');
+
+  W('<div class="grid g21">');
+  // 待办
+  W('<div class="card"><div class="card-h"><h3>今日待办</h3><span class="sub">按紧急度排序</span></div><div class="card-b">');
+  const todos=[];
+  if(pending>0)todos.push({lv:'r',t:'完成晨检点名',d:'还有 '+pending+' 名幼儿未打卡',go:'attend'});
+  if(overdue.length)todos.push({lv:'r',t:'体检到期未复检',d:overdue.length+' 人已超过预约日期',go:'health'});
+  if(unvacc.length)todos.push({lv:'a',t:'接种证未交齐',d:'缺 '+unvacc.length+' 份，需汇总上报',go:'health'});
+  if(S.obs.filter(o=>o.date===today()).length===0)todos.push({lv:'a',t:'今日观察记录未填写',d:'建议至少记录 1 条',go:'obs'});
+  todos.push({lv:'n',t:'整理明日活动材料',d:'手工区耗材清点',go:''});
+  if(!todos.filter(x=>x.lv!=='n').length)W('<div class="empty" style="padding:26px">今天没有紧急事项</div>');
+  todos.forEach(x=>{
+    W('<div style="display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid #f0f2f5">');
+    W('<span class="pill '+x.lv+'" style="width:6px;height:6px;padding:0;border-radius:50%;min-width:6px"></span>');
+    W('<div style="flex:1"><div style="font-size:13.5px;font-weight:550">'+esc(x.t)+'</div><div class="tiny muted">'+esc(x.d)+'</div></div>');
+    if(x.go)W('<button class="btn sm" onclick="go(\''+x.go+'\')">处理</button>');
+    W('</div>');
+  });
+  W('</div></div>');
+
+  // 快捷
+  W('<div class="card"><div class="card-h"><h3>快捷操作</h3></div><div class="card-b">');
+  W('<div class="grid g2" style="gap:9px">');
+  W(quickBtn('attend','晨检点名','打卡'));
+  W(quickBtn('obs','写观察记录','记录'));
+  W(quickBtn('notice','生成通知','文案'));
+  W(quickBtn('tool','随机点名','抽取'));
+  W('</div>');
+  W('<div class="sec-t">最近记录</div>');
+  if(!recent.length)W('<div class="tiny muted">暂无观察记录</div>');
+  recent.forEach(o=>{
+    const c=S.children.find(x=>x.id===o.cid);
+    W('<div style="padding:8px 0;border-bottom:1px solid #f0f2f5">');
+    W('<div class="row" style="justify-content:space-between"><b style="font-size:13px">'+esc(c?c.name:'已删除')+'</b><span class="tiny muted">'+esc(o.date)+'</span></div>');
+    W('<div class="tiny muted" style="margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">'+esc(o.text)+'</div>');
+    W('</div>');
+  });
+  W('</div></div>');
+  W('</div>');
+
+  W('<div class="card" style="margin-top:14px"><div class="card-h"><h3>本月出勤趋势</h3><span class="sub">近 14 天</span></div><div class="card-b">');
+  W(barChart14());
+  W('</div></div>');
+}
+const ICO={
+  users:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20"/><circle cx="10" cy="8" r="3.2"/><path d="M20 20v-1.5a3.5 3.5 0 0 0-2.6-3.4"/><path d="M15.5 4.6a3.2 3.2 0 0 1 0 6.2"/></svg>',
+  clock:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/></svg>',
+  leave:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3 10h18"/><path d="M9.5 14.5h5"/></svg>',
+  alert:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5"/><path d="M12 16h.01"/></svg>',
+  shield:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 5.8v5.4c0 4.2 2.9 7.6 7 9.8 4.1-2.2 7-5.6 7-9.8V5.8L12 3Z"/><path d="M9.2 12.2l2 2 3.6-3.8"/></svg>',
+  heart:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.4 5.6a5.4 5.4 0 0 0-7.7 0L12 6.3l-.7-.7a5.4 5.4 0 1 0-7.7 7.7L12 21.5l8.4-8.2a5.4 5.4 0 0 0 0-7.7Z"/><path d="M3.5 12.5h4l1.5-2.5 2 4 1.5-2.5h4"/></svg>'
+};
+function cardStat(lbl,num,unit,hint,color,ico){
+  const map={g:'var(--green)',a:'var(--amber)',r:'var(--red)',b:'var(--accent)',n:'var(--t3)'};
+  return '<div class="card stat"><div class="stat-top"><div class="lbl">'+esc(lbl)+'</div>'+
+    (ico?'<div class="stat-ico '+color+'">'+ICO[ico]+'</div>':'')+'</div>'+
+    '<div class="num" style="color:'+(color==='g'?'var(--t1)':map[color])+'">'+num+(unit?'<span class="unit">'+esc(unit)+'</span>':'')+'</div>'+
+    '<div class="hint">'+esc(hint)+'</div></div>';
+}
+function quickBtn(v,t,s){
+  return '<button class="att-card" onclick="go(\''+v+'\')" style="padding:12px"><div style="font-size:13px;font-weight:600">'+t+'</div><div class="tiny muted" style="margin-top:2px">'+s+'</div></button>';
+}
+function barChart14(){
+  const days=[];for(let i=13;i>=0;i--)days.push(addDays(today(),-i));
+  const vals=days.map(d=>{
+    const a=attOf(d);let p=0,tot=0;
+    S.children.forEach(c=>{if(a[c.id]){tot++;if(a[c.id]==='present'||a[c.id]==='late')p++;}});
+    return tot?Math.round(p/tot*100):0;
+  });
+  let h='<div class="chart-wrap"><div class="chart-plot">';
+  h+='<div class="chart-grid"><i style="bottom:0"></i><i style="bottom:50%"></i><i style="bottom:100%"></i></div>';
+  h+='<div class="bars">';
+  vals.forEach((v,i)=>{
+    const hgt=Math.max(4,Math.round(v/100*74));
+    const isToday=i===13;
+    h+='<div class="bar-col'+(isToday?' today':'')+'" title="'+days[i].slice(5)+' 出勤率 '+v+'%">';
+    h+='<div class="bar-val">'+v+'</div>';
+    h+='<div class="bar" style="height:'+hgt+'px"></div>';
+    h+='<div class="bar-day">'+days[i].slice(5)+'</div>';
+    h+='</div>';
+  });
+  return h+'</div></div></div>';
+}
+
+/* ============ 名册 ============ */
+let rosterKW='',rosterSex='',rosterTag='';
+function vRoster(){
+  W('<div class="card"><div class="card-h">');
+  W('<div class="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>'+
+    '<input class="input" id="kw" placeholder="搜索姓名 / 家长 / 住址" value="'+esc(rosterKW)+'" oninput="rosterKW=this.value;renderList()"></div>');
+  W('<select class="select" style="width:96px" onchange="rosterSex=this.value;renderList()"><option value="">全部性别</option>'+
+    '<option'+(rosterSex==='男'?' selected':'')+'>男</option><option'+(rosterSex==='女'?' selected':'')+'>女</option></select>');
+  W('<select class="select" style="width:120px" onchange="rosterTag=this.value;renderList()"><option value="">全部标记</option>'+
+    '<option value="allergy"'+(rosterTag==='allergy'?' selected':'')+'>有过敏</option>'+
+    '<option value="novac"'+(rosterTag==='novac'?' selected':'')+'>接种未交</option>'+
+    '<option value="note"'+(rosterTag==='note'?' selected':'')+'>有特殊备注</option></select>');
+  W('<div class="spacer"></div>');
+  W('<button class="btn sm" onclick="exportCSV()">导出 CSV</button>');
+  W('<button class="btn sm primary" onclick="editChild(null)">新增幼儿</button>');
+  W('</div><div class="card-b" style="padding:0" id="listWrap">');
+  W(rosterTable());
+  W('</div></div>');
+}
+function filtered(){
+  const kw=rosterKW.trim().toLowerCase();
+  return S.children.filter(c=>{
+    if(rosterSex&&c.sex!==rosterSex)return false;
+    if(rosterTag==='allergy'&&(!c.allergy||c.allergy==='无'))return false;
+    if(rosterTag==='novac'&&c.vaccineDone)return false;
+    if(rosterTag==='note'&&!c.note)return false;
+    if(!kw)return true;
+    return (c.name+(c.father&&c.father.name||'')+(c.mother&&c.mother.name||'')+(c.father&&c.father.phone||'')+(c.mother&&c.mother.phone||'')+c.addr).toLowerCase().includes(kw);
+  });
+}
+function rosterTable(){
+  const list=filtered();
+  if(!list.length)return '<div class="empty">没有匹配的幼儿</div>';
+  let h='<table class="tbl"><thead><tr><th style="width:160px">姓名</th><th style="width:56px">性别</th><th style="width:96px">年龄</th><th>主要联系人</th><th style="width:130px">电话</th><th>住址</th><th style="width:120px">标记</th><th style="width:70px"></th></tr></thead><tbody>';
+  list.forEach(c=>{
+    const g=c.father&&c.father.phone?c.father:c.mother;
+    h+='<tr>';
+    h+='<td><div class="name-cell"><span class="ava '+(c.sex==='男'?'m':'f')+'">'+esc(c.name.slice(-2))+'</span>'+esc(c.name)+'</div></td>';
+    h+='<td class="muted">'+esc(c.sex)+'</td>';
+    h+='<td class="muted mono">'+esc(age(c.birth))+'</td>';
+    h+='<td>'+esc(g?g.name:'-')+'</td>';
+    h+='<td class="mono muted">'+esc(g?g.phone:'-')+'</td>';
+    h+='<td class="muted" style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(c.addr||'-')+'</td>';
+    h+='<td>'+((c.allergy&&c.allergy!=='无')?'<span class="pill a">过敏</span> ':'')+(c.vaccineDone?'':'<span class="pill r">接种未交</span>')+(c.note?' <span class="pill n">备注</span>':'')+'</td>';
+    h+='<td><button class="btn sm ghost" onclick="openChild(\''+c.id+'\')">详情</button></td>';
+    h+='</tr>';
+  });
+  return h+'</tbody></table>';
+}
+function renderList(){
+  document.getElementById('listWrap').innerHTML=rosterTable();
+  const i=document.getElementById('kw');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}
+}
+
+/* ============ 点名 ============ */
+let attDate=today();
+function setAtt(d){attDate=d;render();}
+function vAttend(){
+  const a=attOf(attDate);const t=todayStat();
+  W('<div class="card" style="margin-bottom:14px"><div class="card-b row">');
+  W('<input type="date" class="input" style="width:150px" value="'+attDate+'" onchange="setAtt(this.value)">');
+  W('<button class="btn sm" onclick="setAtt(\''+today()+'\')">回到今天</button>');
+  W('<div class="spacer"></div>');
+  const done=S.children.filter(c=>a[c.id]).length;
+  W('<span class="tiny muted">已点 '+done+' / '+S.children.length+'</span>');
+  W('<button class="btn sm" onclick="markAll(\'present\')">全部出勤</button>');
+  W('<button class="btn sm" onclick="clearAtt()">清空本日</button>');
+  W('</div></div>');
+
+  W('<div class="card"><div class="card-h"><h3>点名板</h3><span class="sub">点击状态即可切换，自动保存</span></div><div class="card-b">');
+  W('<div class="att-grid">');
+  S.children.forEach(c=>{
+    const s=a[c.id]||'';
+    W('<div class="att-card"><div class="top"><span class="ava '+(c.sex==='男'?'m':'f')+'">'+esc(c.name.slice(-2))+'</span>'+
+      '<span class="nm">'+esc(c.name)+'</span>'+
+      (c.allergy&&c.allergy!=='无'?'<span class="pill a" style="margin-left:auto" title="'+esc(c.allergy)+'">敏</span>':'')+'</div>');
+    W('<div class="st">');
+    [['present','到'],['late','迟'],['leave','假'],['absent','缺']].forEach(([k,lab])=>{
+      W('<button class="chip'+(s===k?' on':'')+'" data-s="'+k+'" onclick="setStatus(\''+c.id+'\',\''+k+'\')">'+lab+'</button>');
+    });
+    W('</div></div>');
+  });
+  W('</div></div></div>');
+}
+function setStatus(cid,s){
+  if(!S.attend[attDate])S.attend[attDate]={};
+  const a=S.attend[attDate];
+  a[cid]=(a[cid]===s)?'':s;
+  save();render();
+}
+function markAll(s){
+  if(!S.attend[attDate])S.attend[attDate]={};
+  const a=S.attend[attDate];
+  S.children.forEach(c=>{a[c.id]=s;});
+  save();render();toast('已全部标记为出勤');
+}
+function clearAtt(){S.attend[attDate]={};save();render();toast('已清空 '+attDate);}
+
+/* ============ 观察记录 ============ */
+let obsFilter='';
+function vObs(){
+  W('<div class="card" style="margin-bottom:14px"><div class="card-b">');
+  W('<div class="sec-t" style="margin-top:0">快速记录</div>');
+  W('<div class="row" style="margin-bottom:9px">');
+  W('<select class="select" id="obsChild" style="width:130px"><option value="">选择幼儿</option>'+S.children.map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join('')+'</select>');
+  W('<select class="select" id="obsDomain" style="width:130px">'+DOMAINS.map(d=>'<option>'+d+'</option>').join('')+'</select>');
+  W('<select class="select" id="obsLevel" style="width:100px"><option>良好</option><option>优秀</option><option>需关注</option></select>');
+  W('</div>');
+  W('<textarea class="textarea" id="obsText" rows="3" placeholder="今天观察到什么？写具体行为，不写评价。例：能独立完成穿鞋，并帮助同伴系鞋带。"></textarea>');
+  W('<div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn primary" onclick="addObs()">保存记录</button></div>');
+  W('</div></div>');
+
+  W('<div class="card"><div class="card-h"><h3>记录库</h3>');
+  W('<select class="select" style="width:130px" onchange="obsFilter=this.value;render()"><option value="">全部领域</option>'+
+    DOMAINS.map(d=>'<option'+(obsFilter===d?' selected':'')+'>'+d+'</option>').join('')+'</select>');
+  W('<div class="spacer"></div><button class="btn sm" onclick="exportObs()">导出文本</button></div>');
+  W('<div class="card-b" style="padding:0">');
+  const list=S.obs.filter(o=>!obsFilter||o.domain===obsFilter).sort((x,y)=>x.date<y.date?1:-1);
+  if(!list.length)W('<div class="empty">还没有观察记录</div>');
+  else{
+    W('<table class="tbl"><thead><tr><th style="width:100px">日期</th><th style="width:110px">幼儿</th><th style="width:120px">领域</th><th>记录内容</th><th style="width:80px">评价</th><th style="width:50px"></th></tr></thead><tbody>');
+    list.forEach(o=>{
+      const c=S.children.find(x=>x.id===o.cid);
+      W('<tr><td class="mono muted">'+esc(o.date)+'</td><td>'+esc(c?c.name:'-')+'</td><td class="muted">'+esc(o.domain)+'</td>'+
+        '<td>'+esc(o.text)+'</td><td><span class="pill '+(o.level==='需关注'?'a':(o.level==='优秀'?'g':'n'))+'">'+esc(o.level)+'</span></td>'+
+        '<td><button class="btn sm ghost" onclick="delObs(\''+o.id+'\')">删</button></td></tr>');
+    });
+    W('</tbody></table>');
+  }
+  W('</div></div>');
+}
+function addObs(){
+  const cid=document.getElementById('obsChild').value;
+  const text=document.getElementById('obsText').value.trim();
+  if(!cid)return toast('先选择幼儿');
+  if(!text)return toast('写点内容再保存');
+  S.obs.unshift({id:rid('o'),cid:cid,date:today(),domain:document.getElementById('obsDomain').value,text:text,level:document.getElementById('obsLevel').value});
+  save();render();toast('已保存');
+}
+function delObs(id){S.obs=S.obs.filter(o=>o.id!==id);save();render();}
+function exportObs(){
+  const txt=S.obs.map(o=>{const c=S.children.find(x=>x.id===o.cid);return o.date+'  '+(c?c.name:'')+'  【'+o.domain+'】'+o.text+'（'+o.level+'）';}).join('\n');
+  download('观察记录_'+today()+'.txt',txt);
+}
+function exportCSV(){
+  const rows=[['姓名','性别','出生日期','年龄','父亲','父亲电话','母亲','母亲电话','住址','过敏','接送人','接种证','备注']];
+  S.children.forEach(c=>rows.push([c.name,c.sex,c.birth,age(c.birth),(c.father||{}).name||'',(c.father||{}).phone||'',(c.mother||{}).name||'',(c.mother||{}).phone||'',c.addr,c.allergy,c.pickup,c.vaccineDone?'已交':'未交',c.note]));
+  download('幼儿名册_'+document.getElementById('classSel').value+'_'+today()+'.csv','\ufeff'+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n'));
+}
+
+/* ============ 通知与沟通 ============ */
+let curTpl=S.tpl?S.tpl[0]?S.tpl[0].id:'':'';
+function vNotice(){
+  W('<div class="grid g21">');
+  W('<div class="card"><div class="card-h"><h3>通知文案生成</h3><span class="sub">填变量 → 生成 → 复制发群</span></div><div class="card-b">');
+  W('<div class="field"><label>选择模板</label><select class="select" onchange="curTpl=this.value;render()">'+
+    S.tpl.map(t=>'<option value="'+t.id+'"'+(curTpl===t.id?' selected':'')+'>'+esc(t.name)+'</option>').join('')+'</select></div>');
+  const t=S.tpl.find(x=>x.id===curTpl)||S.tpl[0];
+  const vars=[...new Set((t?(t.tpl.match(/\{(.+?)\}/g)||[]):[]).map(s=>s.slice(1,-1)))];
+  const preset={'班级':document.getElementById('classSel').value,'日期':today(),'返园日期':addDays(today(),3),'老师':'王老师','地点':'班级活动室','物品':'一套换洗衣物','事项':'秋天的变化','幼儿':''};
+  W('<div class="grid g2" style="gap:0 12px">');
+  vars.forEach(v=>{
+    if(v==='幼儿'){
+      W('<div class="field"><label>'+v+'</label><select class="select" data-var="'+v+'"><option value="">（全体）</option>'+S.children.map(c=>'<option>'+esc(c.name)+'</option>').join('')+'</select></div>');
+    }else{
+      W('<div class="field"><label>'+v+'</label><input class="input" data-var="'+v+'" value="'+esc(preset[v]||'')+'"></div>');
+    }
+  });
+  W('</div>');
+  W('<div class="field"><label>生成结果（可直接编辑）</label><textarea class="textarea" id="tplOut" rows="9" style="font-family:inherit">'+(t?esc(fillTpl(t.tpl,preset)):'')+'</textarea></div>');
+  W('<div class="row"><button class="btn primary" onclick="genTpl()">生成</button><button class="btn" onclick="copyTpl()">复制全文</button>'+
+    '<span class="tiny muted">模板可在下方自行增删</span></div>');
+  W('</div></div>');
+
+  W('<div class="card"><div class="card-h"><h3>个别沟通记录</h3></div><div class="card-b">');
+  W('<div class="row" style="margin-bottom:9px"><select class="select" id="cmChild" style="width:120px"><option value="">选择幼儿</option>'+S.children.map(c=>'<option>'+esc(c.name)+'</option>').join('')+'</select>'+
+    '<select class="select" id="cmType" style="width:88px"><option>电话</option><option>面谈</option><option>微信</option><option>家访</option></select></div>');
+  W('<textarea class="textarea" id="cmText" rows="2" placeholder="沟通要点，留存备查"></textarea>');
+  W('<div class="row" style="margin-top:9px;justify-content:flex-end"><button class="btn primary" onclick="addComm()">登记</button></div>');
+  W('<div class="sec-t">历史（近 8 条）</div>');
+  S.comms.slice(-8).reverse().forEach(m=>{
+    W('<div style="padding:9px 0;border-bottom:1px solid #f0f2f5"><div class="row" style="justify-content:space-between">'+
+      '<b style="font-size:13px">'+esc(m.cid)+'</b><span class="tiny muted">'+esc(m.date)+' · '+esc(m.type)+'</span></div>'+
+      '<div class="tiny muted" style="margin-top:2px">'+esc(m.text)+'</div></div>');
+  });
+  W('</div></div>');
+  W('</div>');
+}
+function fillTpl(tp,preset){
+  return tp.replace(/\{(.+?)\}/g,(m,k)=>preset[k]!==undefined?preset[k]:m);
+}
+function genTpl(){
+  const t=S.tpl.find(x=>x.id===curTpl);if(!t)return;
+  const vals={};document.querySelectorAll('[data-var]').forEach(el=>vals[el.dataset.var]=el.value);
+  document.getElementById('tplOut').value=fillTpl(t.tpl,vals);
+  toast('已生成，可再手动修改');
+}
+function copyTpl(){
+  const el=document.getElementById('tplOut');el.select();
+  navigator.clipboard&&navigator.clipboard.writeText(el.value);
+  toast('已复制到剪贴板');
+}
+function addComm(){
+  const n=document.getElementById('cmChild').value;
+  const text=document.getElementById('cmText').value.trim();
+  if(!n)return toast('选择幼儿');
+  if(!text)return toast('填写沟通要点');
+  S.comms.push({id:rid('m'),cid:n,date:today(),type:document.getElementById('cmType').value,text:text});
+  save();render();toast('已登记');
+}
+
+/* ============ 健康与接种 ============ */
+function vHealth(){
+  const unvacc=S.children.filter(c=>!c.vaccineDone);
+  const allergy=S.children.filter(c=>c.allergy&&c.allergy!=='无');
+  const overdue=S.children.filter(c=>c.checkDue&&daysBetween(today(),c.checkDue)<0);
+  W('<div class="grid g3" style="margin-bottom:14px">');
+  W(cardStat('接种证未交',unvacc.length,'人',unvacc.length?'需催交':'已收齐',unvacc.length?'r':'g','shield'));
+  W(cardStat('过敏特殊儿',allergy.length,'人','需在班内公示','a','alert'));
+  W(cardStat('体检逾期',overdue.length,'人',overdue.length?'联系家长复检':'无逾期',overdue.length?'r':'g','heart'));
+  W('</div>');
+
+  W('<div class="grid g21">');
+  W('<div class="card"><div class="card-h"><h3>接种证收缴情况</h3><div class="spacer"></div>'+
+    '<button class="btn sm" onclick="genTplGo()">生成催交通知</button></div><div class="card-b" style="padding:0">');
+  W('<table class="tbl"><thead><tr><th style="width:150px">姓名</th><th style="width:80px">状态</th><th>备注</th><th style="width:90px"></th></tr></thead><tbody>');
+  S.children.forEach(c=>{
+    W('<tr><td><div class="name-cell"><span class="ava '+(c.sex==='男'?'m':'f')+'">'+esc(c.name.slice(-2))+'</span>'+esc(c.name)+'</div></td>'+
+      '<td>'+(c.vaccineDone?'<span class="pill g">已交</span>':'<span class="pill r">未交</span>')+'</td>'+
+      '<td class="muted">'+esc(c.note||'-')+'</td>'+
+      '<td><button class="btn sm ghost" onclick="toggleVac(\''+c.id+'\')">'+(c.vaccineDone?'标记未交':'标记已交')+'</button></td></tr>');
+  });
+  W('</tbody></table></div></div>');
+
+  W('<div class="card"><div class="card-h"><h3>过敏与特殊照顾</h3></div><div class="card-b" style="padding:0">');
+  if(!allergy.length)W('<div class="empty">暂无过敏登记</div>');
+  else{
+    W('<table class="tbl"><thead><tr><th>姓名</th><th>过敏源</th><th>接送</th></tr></thead><tbody>');
+    allergy.forEach(c=>{W('<tr><td>'+esc(c.name)+'</td><td><span class="pill a">'+esc(c.allergy)+'</span></td><td class="muted">'+esc(c.pickup)+'</td></tr>');});
+    W('</tbody></table>');
+  }
+  W('<div class="sec-t" style="padding:0 16px">班内张贴用清单</div><div style="padding:0 16px 16px">');
+  W('<textarea class="textarea" rows="5" readonly>'+esc(allergy.map(c=>c.name+'：'+c.allergy).join('\n')||'（无）')+'</textarea>');
+  W('</div></div></div>');
+  W('</div>');
+}
+function toggleVac(id){const c=S.children.find(x=>x.id===id);c.vaccineDone=!c.vaccineDone;save();render();}
+function genTplGo(){curTpl='t4';go('notice');}
+
+/* ============ 小工具 ============ */
+let rollName='';
+function vTool(){
+  W('<div class="grid g2">');
+  W('<div class="card"><div class="card-h"><h3>随机点名</h3><span class="sub">提问 / 值日 / 排队</span></div><div class="card-b" style="text-align:center">');
+  W('<div style="height:96px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--line-strong);border-radius:8px;background:var(--surface-2);margin-bottom:12px">'+
+    '<span style="font-size:30px;font-weight:680;letter-spacing:2px;color:'+(rollName?'var(--t1)':'var(--t4)')+'">'+esc(rollName||'准备就绪')+'</span></div>');
+  W('<div class="row" style="justify-content:center"><button class="btn primary" onclick="roll()">随机抽取</button>'+
+    '<button class="btn" onclick="roll()">再抽一次</button></div>');
+  W('<div class="tiny muted" style="margin-top:10px">已排除重复，抽完自动重置</div>');
+  W('</div></div>');
+
+  W('<div class="card"><div class="card-h"><h3>值日排班</h3><span class="sub">本周</span></div><div class="card-b">');
+  const jobs=['整理玩具','分发餐具','浇花','擦桌子','排队小班长'];
+  const days=['周一','周二','周三','周四','周五'];
+  W('<table class="tbl"><thead><tr><th style="width:80px">日</th><th>值日生</th></tr></thead><tbody>');
+  days.forEach((d,i)=>{
+    const names=[];for(let k=0;k<3;k++)names.push(S.children[(i*3+k*7)%S.children.length].name);
+    W('<tr><td class="muted">'+d+'</td><td>'+names.map((n,j)=>'<span class="pill n">'+esc(n)+'·'+jobs[j]+'</span>').join(' ')+'</td></tr>');
+  });
+  W('</tbody></table>');
+  W('<div class="row" style="margin-top:11px;justify-content:flex-end"><button class="btn sm" onclick="reDuty()">重新排</button></div>');
+  W('</div></div>');
+
+  W('<div class="card"><div class="card-h"><h3>学期月历</h3></div><div class="card-b">');
+  const now=new Date();
+  W('<div class="tiny muted">'+now.getFullYear()+' 年 '+(now.getMonth()+1)+' 月</div>');
+  W('<div style="margin-top:10px;display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center">');
+  ['日','一','二','三','四','五','六'].forEach(d=>W('<div class="tiny" style="color:var(--t4);font-weight:600">'+d+'</div>'));
+  const first=new Date(now.getFullYear(),now.getMonth(),1).getDay();
+  const dim=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  for(let i=0;i<first;i++)W('<div></div>');
+  for(let d=1;d<=dim;d++){
+    const isT=d===now.getDate();
+    const we=(first+d-1)%7===0||(first+d-1)%7===6;
+    W('<div style="height:30px;line-height:30px;border-radius:6px;font-size:12.5px;'+(isT?'background:var(--accent);color:#fff;font-weight:700':(we?'color:var(--t4)':''))+'">'+d+'</div>');
+  }
+  W('</div></div></div>');
+
+  W('<div class="card"><div class="card-h"><h3>常用话术</h3><span class="sub">点击复制</span></div><div class="card-b">');
+  ['今天在园情绪很好，吃饭午睡都正常。','今天午睡入睡较慢，建议晚上提前半小时休息。','今天和小朋友发生小摩擦，已引导处理，请知悉。','今天户外活动出汗较多，请准备一套换洗衣物。','今天在手工活动中表现很专注，作品已完成带回家。'].forEach(s=>{
+    W('<div style="padding:9px 0;border-bottom:1px solid #f0f2f5;display:flex;gap:9px;align-items:center">'+
+      '<span style="flex:1;font-size:13px">'+esc(s)+'</span><button class="btn sm ghost" onclick="cp(\''+s.replace(/'/g,"")+'\')">复制</button></div>');
+  });
+  W('</div></div>');
+  W('</div>');
+}
+let pool=[];
+function roll(){
+  if(!pool.length)pool=S.children.map(c=>c.name).sort(()=>Math.random()-.5);
+  rollName=pool.pop();
+  render();
+}
+function cp(s){navigator.clipboard&&navigator.clipboard.writeText(s);toast('已复制');}
+function reDuty(){toast('已重新排班');render();}
+
+/* ============ 导入导出 ============ */
+function vImport(){
+  W('<div class="grid g2">');
+  W('<div class="card"><div class="card-h"><h3>从 Excel 导入名册</h3></div><div class="card-b">');
+  W('<div class="tiny muted" style="margin-bottom:10px">在 Excel 中选中表头 + 数据区域复制，粘贴到下面，点解析。列名需包含：姓名、性别、幼儿出生日期、父亲手机号、母亲手机号、现居住地址 等（缺失列可留空）。</div>');
+  W('<textarea class="textarea" id="impText" rows="9" placeholder="直接从 Excel 粘贴（Tab 分隔）"></textarea>');
+  W('<div class="row" style="margin-top:10px"><button class="btn primary" onclick="parseImport()">解析并覆盖</button>'+
+    '<button class="btn" onclick="parseImport(true)">追加合并</button>'+
+    '<button class="btn ghost" onclick="loadDemo()">恢复初始数据</button></div>');
+  W('<div id="impMsg" class="tiny" style="margin-top:9px"></div>');
+  W('</div></div>');
+
+  W('<div class="card"><div class="card-h"><h3>备份与恢复</h3></div><div class="card-b">');
+  W('<div class="tiny muted" style="margin-bottom:10px">所有数据只存在这台电脑的浏览器里。清理浏览器数据前务必导出备份。</div>');
+  W('<div class="row"><button class="btn primary" onclick="exportJSON()">导出备份文件</button>'+
+    '<label class="btn"><input type="file" accept=".json" style="display:none" onchange="importJSON(this)">导入备份文件</label></div>');
+  W('<div class="sec-t">当前数据量</div>');
+  W('<dl class="kv"><dt>幼儿</dt><dd>'+S.children.length+' 人</dd><dt>考勤日</dt><dd>'+Object.keys(S.attend).length+' 天</dd>'+
+    '<dt>观察记录</dt><dd>'+S.obs.length+' 条</dd><dt>沟通记录</dt><dd>'+S.comms.length+' 条</dd></dl>');
+  W('<div class="row"><button class="btn" onclick="wipe()">清空全部数据</button></div>');
+  W('</div></div>');
+  W('</div>');
+}
+function parseImport(append){
+  const txt=document.getElementById('impText').value.trim();
+  const msg=document.getElementById('impMsg');
+  if(!txt)return msg.textContent='先粘贴数据';
+  const lines=txt.split(/\r?\n/).filter(l=>l.trim());
+  const head=lines[0].split('\t').map(s=>s.trim());
+  const find=(...keys)=>head.findIndex(h=>keys.some(k=>h.includes(k)));
+  const iName=find('姓名','幼儿姓名');
+  if(iName<0)return msg.innerHTML='<span style="color:var(--red)">没找到"姓名"列</span>';
+  const iSex=find('性别'),iBirth=find('出生日期','出生'),iF=find('父亲姓名','父亲'),iFp=find('父亲手机','父亲联系'),
+        iM=find('母亲姓名','母亲'),iMp=find('母亲手机','母亲联系'),iAddr=find('现居住地址','居住地址','住址'),
+        iNation=find('民族'),iId=find('身份证'),iPick=find('接送');
+  const out=[];
+  for(let i=1;i<lines.length;i++){
+    const c=lines[i].split('\t');
+    const name=(c[iName]||'').trim();if(!name)continue;
+    const sex=iSex>=0?(c[iSex]||'').trim():'';
+    out.push({
+      id:rid('c'),name:name,pinyin:'',sex:sex||(iId>=0&&(c[iId]||'').length>16?(parseInt((c[iId]||'').slice(16,17))%2?'男':'女'):'男'),
+      birth:iBirth>=0?(c[iBirth]||'').trim().replace(/\//g,'-'):'',
+      nation:iNation>=0?(c[iNation]||'').trim():'汉',
+      idcard:iId>=0?(c[iId]||'').trim():'',
+      mother:{name:iM>=0?(c[iM]||'').trim():'',phone:iMp>=0?(c[iMp]||'').trim():''},
+      father:{name:iF>=0?(c[iF]||'').trim():'',phone:iFp>=0?(c[iFp]||'').trim():''},
+      addr:iAddr>=0?(c[iAddr]||'').trim():'',
+      allergy:'无',pickup:iPick>=0?(c[iPick]||'').trim():'父母',note:'',vaccineDone:false,checkDue:''
+    });
+  }
+  if(!out.length)return msg.innerHTML='<span style="color:var(--red)">没有解析出有效行</span>';
+  if(append)S.children=S.children.concat(out);else S.children=out;
+  save();msg.innerHTML='<span style="color:var(--green)">成功导入 '+out.length+' 名幼儿</span>';
+  setTimeout(()=>go('roster'),600);
+}
+function loadDemo(){if(confirm('将覆盖当前全部数据，恢复为初始名册？')){seedReal();save();toast('已恢复初始数据');render();}}
+function wipe(){if(confirm('确认清空？此操作不可撤销')){localStorage.removeItem(KEY);seedReal();save();render();}}
+function download(name,content){
+  const blob=new Blob([content],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();
+}
+function exportJSON(){
+  download('班级工作台备份_'+document.getElementById('classSel').value+'_'+today()+'.json',JSON.stringify(S,null,2));
+  toast('已导出备份');
+}
+function importJSON(inp){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.children)throw 0;S=d;save();render();toast('已恢复备份');}catch(e){toast('文件格式不对');}};
+  r.readAsText(f);
+}
+
+/* ============ drawer ============ */
+function openChild(id){
+  const c=S.children.find(x=>x.id===id);if(!c)return;
+  const a=attOf(today());
+  document.getElementById('drawerH').innerHTML=
+    '<span class="ava '+(c.sex==='男'?'m':'f')+'" style="width:38px;height:38px;font-size:14px">'+esc(c.name.slice(-2))+'</span>'+
+    '<div style="flex:1"><div style="font-size:15px;font-weight:650">'+esc(c.name)+'</div>'+
+    '<div class="tiny muted">'+esc(c.sex)+' · '+esc(age(c.birth))+' · '+(a[c.id]?({present:'今日已到',late:'今日迟到',leave:'今日请假',absent:'今日缺席'})[a[c.id]]:'今日未点名')+'</div></div>'+
+    '<button class="btn sm ghost" onclick="closeDrawer()">关闭</button>';
+  let h='';
+  h+='<div class="sec-t" style="margin-top:0">基本信息</div><dl class="kv">'+
+    '<dt>出生日期</dt><dd>'+esc(c.birth||'-')+'</dd>'+
+    '<dt>民族</dt><dd>'+esc(c.nation||'-')+'</dd>'+
+    '<dt>身份证号</dt><dd class="mono" style="font-size:12px">'+esc(c.idcard||'未登记')+'</dd>'+
+    '<dt>居住地址</dt><dd>'+esc(c.addr||'-')+'</dd></dl>';
+  h+='<div class="sec-t">家长联系</div><dl class="kv">'+
+    '<dt>父亲</dt><dd>'+esc((c.father||{}).name||'-')+' <span class="mono muted">'+esc((c.father||{}).phone||'')+'</span></dd>'+
+    '<dt>母亲</dt><dd>'+esc((c.mother||{}).name||'-')+' <span class="mono muted">'+esc((c.mother||{}).phone||'')+'</span></dd>'+
+    '<dt>接送人</dt><dd>'+esc(c.pickup||'-')+'</dd></dl>';
+  h+='<div class="sec-t">健康与照顾</div><dl class="kv">'+
+    '<dt>过敏源</dt><dd>'+(c.allergy&&c.allergy!=='无'?'<span class="pill a">'+esc(c.allergy)+'</span>':'<span class="pill g">无</span>')+'</dd>'+
+    '<dt>接种证</dt><dd>'+(c.vaccineDone?'<span class="pill g">已交</span>':'<span class="pill r">未交</span>')+'</dd>'+
+    '<dt>体检复检</dt><dd>'+esc(c.checkDue||'无')+'</dd>'+
+    '<dt>特别备注</dt><dd>'+esc(c.note||'无')+'</dd></dl>';
+  const obs=S.obs.filter(o=>o.cid===id).sort((x,y)=>x.date<y.date?1:-1);
+  h+='<div class="sec-t">观察记录（'+obs.length+'）</div>';
+  if(!obs.length)h+='<div class="tiny muted">暂无</div>';
+  obs.slice(0,10).forEach(o=>{
+    h+='<div style="padding:9px 0;border-bottom:1px solid #f0f2f5"><div class="row" style="justify-content:space-between">'+
+      '<span class="pill n">'+esc(o.domain)+'</span><span class="tiny muted">'+esc(o.date)+'</span></div>'+
+      '<div style="font-size:13px;margin-top:5px">'+esc(o.text)+'</div></div>';
+  });
+  document.getElementById('drawerB').innerHTML=h;
+  document.getElementById('drawerF').innerHTML=
+    '<button class="btn primary" onclick="editChild(\''+id+'\')" style="flex:1">编辑档案</button>'+
+    '<button class="btn" onclick="callPhone(\''+id+'\')">联系家长</button>';
+  document.getElementById('mask').classList.add('on');
+  document.getElementById('drawer').classList.add('on');
+}
+function closeDrawer(){
+  document.getElementById('mask').classList.remove('on');
+  document.getElementById('drawer').classList.remove('on');
+}
+function callPhone(id){
+  const c=S.children.find(x=>x.id===id);
+  const p=(c.father&&c.father.phone)||(c.mother&&c.mother.phone);
+  if(p){navigator.clipboard&&navigator.clipboard.writeText(p);toast('号码已复制：'+p);}
+  else toast('未登记电话');
+}
+function editChild(id){
+  const c=id?S.children.find(x=>x.id===id):{id:'',name:'',sex:'女',birth:'',nation:'汉',idcard:'',father:{name:'',phone:''},mother:{name:'',phone:''},addr:'',allergy:'无',pickup:'父母',note:'',vaccineDone:false,checkDue:''};
+  const f=c.father||{},m=c.mother||{};
+  let h='';
+  const row=(l,k,v,ph)=>'<div class="field"><label>'+l+'</label><input class="input" data-k="'+k+'" value="'+esc(v||'')+'" placeholder="'+esc(ph||'')+'"></div>';
+  h+='<div class="grid g2" style="gap:0 12px">';
+  h+=row('姓名','name',c.name)+'<div class="field"><label>性别</label><select class="select" data-k="sex"><option'+(c.sex==='女'?' selected':'')+'>女</option><option'+(c.sex==='男'?' selected':'')+'>男</option></select></div>';
+  h+=row('出生日期','birth',c.birth,'2019-09-01')+row('民族','nation',c.nation,'汉');
+  h+=row('身份证号','idcard',c.idcard)+row('居住地址','addr',c.addr);
+  h+=row('父亲姓名','f_name',f.name)+row('父亲手机','f_phone',f.phone);
+  h+=row('母亲姓名','m_name',m.name)+row('母亲手机','m_phone',m.phone);
+  h+='</div>';
+  h+='<div class="grid g2" style="gap:0 12px">';
+  h+='<div class="field"><label>过敏源</label><input class="input" data-k="allergy" value="'+esc(c.allergy||'无')+'"></div>';
+  h+='<div class="field"><label>接送人</label><input class="input" data-k="pickup" value="'+esc(c.pickup||'')+'"></div>';
+  h+='</div>';
+  h+='<div class="field"><label>特别备注</label><textarea class="textarea" data-k="note" rows="2">'+esc(c.note||'')+'</textarea></div>';
+  h+='<label class="row" style="gap:7px;font-size:13px"><input type="checkbox" data-k="vaccineDone" '+(c.vaccineDone?'checked':'')+' style="width:15px;height:15px"> 接种证已交</label>';
+  document.getElementById('drawerH').innerHTML='<b style="font-size:15px">'+(id?'编辑档案':'新增幼儿')+'</b><div class="spacer"></div><button class="btn sm ghost" onclick="closeDrawer()">关闭</button>';
+  document.getElementById('drawerB').innerHTML=h;
+  document.getElementById('drawerF').innerHTML='<button class="btn primary" style="flex:1" onclick="saveChild(\''+(id||'')+'\')">保存</button>'+
+    (id?'<button class="btn" onclick="delChild(\''+id+'\')">删除</button>':'');
+  document.getElementById('mask').classList.add('on');
+  document.getElementById('drawer').classList.add('on');
+}
+function saveChild(id){
+  const get=k=>{const el=document.querySelector('[data-k="'+k+'"]');return el?el.value.trim():'';};
+  const chk=()=>{const el=document.querySelector('[data-k="vaccineDone"]');return el?el.checked:false;};
+  const name=get('name');if(!name)return toast('姓名必填');
+  const o={id:id||rid('c'),name:name,sex:get('sex'),birth:get('birth'),nation:get('nation'),idcard:get('idcard'),
+    father:{name:get('f_name'),phone:get('f_phone')},mother:{name:get('m_name'),phone:get('m_phone')},
+    addr:get('addr'),allergy:get('allergy')||'无',pickup:get('pickup'),note:get('note'),
+    vaccineDone:chk(),checkDue:''};
+  if(id){const i=S.children.findIndex(x=>x.id===id);S.children[i]=Object.assign({},S.children[i],o);}
+  else S.children.push(o);
+  save();closeDrawer();render();toast('已保存');
+}
+function delChild(id){
+  if(!confirm('确认删除该幼儿及其考勤记录？'))return;
+  S.children=S.children.filter(x=>x.id!==id);
+  Object.keys(S.attend).forEach(d=>{delete S.attend[d][id];});
+  S.obs=S.obs.filter(o=>o.cid!==id);
+  save();closeDrawer();render();toast('已删除');
+}
+
+function openSheet(title,body,saveCall,label,extraCall,extraLabel){
+  document.getElementById('drawerH').innerHTML='<b style="font-size:15px">'+esc(title)+'</b><div class="spacer"></div><button class="btn sm ghost" onclick="closeDrawer()">关闭</button>';
+  document.getElementById('drawerB').innerHTML=body;
+  document.getElementById('drawerF').innerHTML='<button class="btn primary" style="flex:1" onclick="'+saveCall+'">'+esc(label||'保存')+'</button>'+(extraCall?'<button class="btn" onclick="'+extraCall+'">'+esc(extraLabel||'删除')+'</button>':'');
+  document.getElementById('mask').classList.add('on');document.getElementById('drawer').classList.add('on');
+}
+
+
+/* ============ 备课中心 ============ */
+let planTab='week',planWeek=0,lessonKW='';
+const DNAMES=['周一','周二','周三','周四','周五'];
+function fmtD(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function mondayStr(){
+  const x=new Date();const w=x.getDay();
+  x.setDate(x.getDate()+((w===0?-6:1-w))+planWeek*7);
+  return fmtD(x);
+}
+function addL(s,n){const d=new Date(s+'T00:00:00');d.setDate(d.getDate()+n);return fmtD(d);}
+function planKey(){return mondayStr();}
+function curPlan(){
+  const k=planKey();
+  if(!S.plan[k])S.plan[k]={0:[],1:[],2:[],3:[],4:[]};
+  return S.plan[k];
+}
+function vPlan(){
+  W('<div class="card" style="margin-bottom:14px"><div class="card-b row">');
+  W('<div class="seg">');
+  [['week','周计划'],['lesson','教案库'],['schedule','作息表']].forEach(function(p){
+    W('<button class="'+(planTab===p[0]?'on':'')+'" onclick="planTab=\''+p[0]+'\';render()">'+p[1]+'</button>');
+  });
+  W('</div><div class="spacer"></div><span class="tiny muted">'+esc(document.getElementById('classSel').value)+'</span></div></div>');
+  if(planTab==='week')vWeek();
+  else if(planTab==='lesson')vLesson();
+  else vSched();
+}
+function vWeek(){
+  const mon=mondayStr(),P=curPlan();
+  W('<div class="card" style="margin-bottom:14px"><div class="card-b row">');
+  W('<button class="btn sm" onclick="planWeek--;render()">上一周</button>');
+  W('<b style="font-size:14px">'+mon+' 至 '+addL(mon,4)+'</b>');
+  W('<button class="btn sm" onclick="planWeek++;render()">下一周</button>');
+  if(planWeek!==0)W('<button class="btn sm ghost" onclick="planWeek=0;render()">回到本周</button>');
+  W('<div class="spacer"></div>');
+  W('<button class="btn sm" onclick="copyLastWeek()">复制上周计划</button>');
+  W('<button class="btn sm primary" onclick="exportPlan()">导出周计划</button>');
+  W('</div></div>');
+  W('<div class="grid" style="grid-template-columns:repeat(5,minmax(0,1fr));gap:12px">');
+  for(let i=0;i<5;i++){
+    const d=addL(mon,i),list=P[i]||[];
+    W('<div class="card"><div class="card-h" style="flex-direction:column;align-items:flex-start;gap:1px;padding:12px 14px;min-height:0">');
+    W('<div style="font-size:13.5px;font-weight:650">'+DNAMES[i]+'</div><div class="tiny muted">'+d.slice(5)+'</div></div>');
+    W('<div class="card-b" style="padding:12px">');
+    if(!list.length)W('<div class="tiny muted" style="padding:4px 0 8px">未安排</div>');
+    list.forEach(function(a){
+      W('<div class="plan-item"><div class="row" style="justify-content:space-between;gap:6px">'+
+        '<span class="pill b">'+esc(a.domain)+'</span>'+
+        '<button class="btn sm ghost" onclick="delPlanAct('+i+',\''+a.id+'\')">×</button></div>');
+      W('<div style="font-size:13px;font-weight:600;margin-top:6px;cursor:pointer" onclick="editPlanAct('+i+',\''+a.id+'\')">《'+esc(a.title)+'》</div>');
+      if(a.goal)W('<div class="tiny muted" style="margin-top:4px">目标：'+esc(a.goal)+'</div>');
+      if(a.prep)W('<div class="tiny muted" style="margin-top:2px">准备：'+esc(a.prep)+'</div>');
+      W('</div>');
+    });
+    W('<button class="btn sm" style="width:100%;margin-top:9px" onclick="addPlanAct('+i+')">+ 添加</button>');
+    W('</div></div>');
+  }
+  W('</div>');
+}
+function planForm(day,act){
+  const a=act||{domain:DOMAINS[0],title:'',goal:'',prep:''};
+  let h='<div class="field"><label>活动领域</label><select class="select" data-k="domain">'+
+    DOMAINS.map(function(d){return '<option'+(a.domain===d?' selected':'')+'>'+d+'</option>';}).join('')+'</select></div>';
+  h+='<div class="field"><label>活动名称</label><input class="input" data-k="title" value="'+esc(a.title)+'" placeholder="如：认识秋天"></div>';
+  h+='<div class="field"><label>活动目标</label><textarea class="textarea" data-k="goal" rows="3">'+esc(a.goal)+'</textarea></div>';
+  h+='<div class="field"><label>活动准备</label><textarea class="textarea" data-k="prep" rows="2">'+esc(a.prep)+'</textarea></div>';
+  openSheet(act?'编辑活动':'添加活动（'+DNAMES[day]+'）',h,'savePlanAct('+day+','+(act?'\''+act.id+'\'':'null')+')','保存');
+}
+function addPlanAct(d){planForm(d,null);}
+function editPlanAct(d,id){const P=curPlan();const a=(P[d]||[]).find(function(x){return x.id===id;});if(a)planForm(d,a);}
+function savePlanAct(d,id){
+  const g=function(k){const el=document.querySelector('[data-k="'+k+'"]');return el?el.value.trim():'';};
+  const title=g('title');if(!title)return toast('活动名称必填');
+  const P=curPlan();if(!P[d])P[d]=[];
+  const o={domain:g('domain')||DOMAINS[0],title:title,goal:g('goal'),prep:g('prep')};
+  if(id){const i=P[d].findIndex(function(x){return x.id===id;});if(i>=0)P[d][i]=Object.assign({},P[d][i],o);}
+  else P[d].push(Object.assign({id:rid('a')},o));
+  save();closeDrawer();render();toast('已保存');
+}
+function delPlanAct(d,id){const P=curPlan();P[d]=(P[d]||[]).filter(function(x){return x.id!==id;});save();render();}
+function copyLastWeek(){
+  const last=addL(planKey(),-7);
+  const src=S.plan[last];
+  if(!src||!Object.keys(src).some(function(k){return (src[k]||[]).length;}))return toast('上一周没有可复制的内容');
+  const cp=JSON.parse(JSON.stringify(S.plan[last]));
+  Object.keys(cp).forEach(function(k){(cp[k]||[]).forEach(function(a){a.id=rid('a');});});
+  S.plan[planKey()]=cp;save();render();toast('已复制上周计划，可再修改');
+}
+function exportPlan(){
+  const mon=planKey(),P=curPlan(),cls=document.getElementById('classSel').value;
+  let t='九小附属幼儿园 '+cls+' 周活动计划\n'+mon+' 至 '+addL(mon,4)+'\n\n';
+  for(let i=0;i<5;i++){
+    const list=P[i]||[];
+    t+='【'+DNAMES[i]+' '+addL(mon,i)+'】\n';
+    if(!list.length)t+='  （未安排）\n';
+    list.forEach(function(a,j){
+      t+='  '+(j+1)+'. '+a.domain+'《'+a.title+'》\n';
+      if(a.goal)t+='     目标：'+a.goal+'\n';
+      if(a.prep)t+='     准备：'+a.prep+'\n';
+    });
+    t+='\n';
+  }
+  download(cls+'周计划_'+mon+'.txt',t);toast('已导出');
+}
+function vLesson(){
+  W('<div class="card"><div class="card-h">');
+  W('<div class="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>'+
+    '<input class="input" placeholder="搜索教案标题 / 领域" value="'+esc(lessonKW)+'" oninput="lessonKW=this.value;renderLessons()"></div>');
+  W('<div class="spacer"></div><button class="btn sm primary" onclick="editLesson(null)">新建教案</button></div>');
+  W('<div class="card-b" style="padding:0" id="lessonWrap">'+lessonTable()+'</div></div>');
+}
+function lessonTable(){
+  const kw=lessonKW.trim();
+  const list=S.lessons.filter(function(l){return !kw||(l.title+l.domain+(l.goal||'')).indexOf(kw)>=0;});
+  list.sort(function(a,b){return a.date<b.date?1:-1;});
+  if(!list.length)return '<div class="empty">没有教案，点「新建教案」开始</div>';
+  let h='<table class="tbl"><thead><tr><th>活动名称</th><th style="width:120px">领域</th><th style="width:76px">时长</th><th style="width:100px">日期</th><th style="width:130px"></th></tr></thead><tbody>';
+  list.forEach(function(l){
+    h+='<tr><td style="font-weight:600">'+esc(l.title)+'</td><td><span class="pill b">'+esc(l.domain)+'</span></td>'+
+      '<td class="mono muted">'+(l.minutes||'-')+' 分钟</td><td class="mono muted">'+esc(l.date||'-')+'</td>'+
+      '<td><button class="btn sm ghost" onclick="openLesson(\''+l.id+'\')">查看</button> '+
+      '<button class="btn sm ghost" onclick="editLesson(\''+l.id+'\')">编辑</button></td></tr>';
+  });
+  return h+'</tbody></table>';
+}
+function renderLessons(){
+  document.getElementById('lessonWrap').innerHTML=lessonTable();
+  const i=document.querySelector('.search .input');
+  if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}
+}
+function editLesson(id){
+  const l=id?S.lessons.find(function(x){return x.id===id;}):{title:'',domain:DOMAINS[0],age:'大班',minutes:25,goal:'',prep:'',steps:'',reflection:'',date:today()};
+  let h='<div class="grid g2" style="gap:0 12px">';
+  h+='<div class="field"><label>活动名称</label><input class="input" data-k="title" value="'+esc(l.title||'')+'"></div>';
+  h+='<div class="field"><label>领域</label><select class="select" data-k="domain">'+
+     DOMAINS.map(function(d){return '<option'+(l.domain===d?' selected':'')+'>'+d+'</option>';}).join('')+'</select></div>';
+  h+='<div class="field"><label>适用年龄</label><select class="select" data-k="age">'+
+     ['小班','中班','大班'].map(function(a){return '<option'+(l.age===a?' selected':'')+'>'+a+'</option>';}).join('')+'</select></div>';
+  h+='<div class="field"><label>时长（分钟）</label><input class="input" data-k="minutes" type="number" value="'+(l.minutes||25)+'"></div>';
+  h+='</div>';
+  h+='<div class="field"><label>活动目标</label><textarea class="textarea" data-k="goal" rows="2">'+esc(l.goal||'')+'</textarea></div>';
+  h+='<div class="field"><label>活动准备</label><textarea class="textarea" data-k="prep" rows="2">'+esc(l.prep||'')+'</textarea></div>';
+  h+='<div class="field"><label>活动过程</label><textarea class="textarea" data-k="steps" rows="7" placeholder="一、导入（3 分钟）&#10;二、展开（12 分钟）&#10;三、小结（5 分钟）">'+esc(l.steps||'')+'</textarea></div>';
+  h+='<div class="field"><label>课后反思</label><textarea class="textarea" data-k="reflection" rows="2">'+esc(l.reflection||'')+'</textarea></div>';
+  openSheet(id?'编辑教案':'新建教案',h,'saveLesson('+(id?'\''+id+'\'':'null')+')','保存',id?'delLesson(\''+id+'\')':'');
+}
+function saveLesson(id){
+  const g=function(k){const el=document.querySelector('[data-k="'+k+'"]');return el?el.value.trim():'';};
+  const t=g('title');if(!t)return toast('活动名称必填');
+  const o={title:t,domain:g('domain'),age:g('age'),minutes:parseInt(g('minutes'))||25,goal:g('goal'),prep:g('prep'),steps:g('steps'),reflection:g('reflection'),date:today()};
+  if(id){const i=S.lessons.findIndex(function(x){return x.id===id;});S.lessons[i]=Object.assign({},S.lessons[i],o);}
+  else S.lessons.unshift(Object.assign({id:rid('l')},o));
+  save();closeDrawer();render();toast('已保存');
+}
+function delLesson(id){if(!confirm('删除这篇教案？'))return;S.lessons=S.lessons.filter(function(x){return x.id!==id;});save();closeDrawer();render();toast('已删除');}
+function openLesson(id){
+  const l=S.lessons.find(function(x){return x.id===id;});if(!l)return;
+  let h='<dl class="kv"><dt>领域</dt><dd><span class="pill b">'+esc(l.domain)+'</span></dd><dt>年龄</dt><dd>'+esc(l.age||'-')+'</dd>'+
+    '<dt>时长</dt><dd>'+(l.minutes||'-')+' 分钟</dd><dt>日期</dt><dd class="mono">'+esc(l.date||'-')+'</dd></dl>';
+  h+='<div class="sec-t">活动目标</div><div style="font-size:13px;white-space:pre-line">'+esc(l.goal||'未填写')+'</div>';
+  h+='<div class="sec-t">活动准备</div><div style="font-size:13px;white-space:pre-line">'+esc(l.prep||'未填写')+'</div>';
+  h+='<div class="sec-t">活动过程</div><div style="font-size:13px;white-space:pre-line">'+esc(l.steps||'未填写')+'</div>';
+  if(l.reflection)h+='<div class="sec-t">课后反思</div><div style="font-size:13px;white-space:pre-line">'+esc(l.reflection)+'</div>';
+  openSheet(l.title,h,'copyLesson(\''+id+'\')','复制全文','editLesson(\''+id+'\')','编辑');
+}
+function copyLesson(id){
+  const l=S.lessons.find(function(x){return x.id===id;});if(!l)return;
+  const t='【'+l.title+'】\n领域：'+l.domain+'　年龄：'+l.age+'　时长：'+(l.minutes||'-')+'分钟\n\n一、活动目标\n'+l.goal+'\n\n二、活动准备\n'+l.prep+'\n\n三、活动过程\n'+l.steps+(l.reflection?'\n\n四、课后反思\n'+l.reflection:'');
+  if(navigator.clipboard)navigator.clipboard.writeText(t);toast('教案已复制');
+}
+function vSched(){
+  W('<div class="card"><div class="card-h"><h3>一日作息时间表</h3><span class="sub">点击单元格直接修改，自动保存</span>'+
+    '<div class="spacer"></div><button class="btn sm" onclick="addSchedRow()">+ 加时段</button>'+
+    '<button class="btn sm" onclick="exportSched()">导出</button></div>');
+  W('<div class="card-b" style="padding:0;overflow-x:auto">');
+  W('<table class="tbl" style="min-width:900px"><thead><tr><th style="width:130px">时间</th>'+
+    DNAMES.map(function(d){return '<th>'+d+'</th>';}).join('')+'<th style="width:50px"></th></tr></thead><tbody>');
+  S.schedule.forEach(function(r,ri){
+    W('<tr><td><input class="sched-input mono" value="'+esc(r.time)+'" onchange="setSchedTime('+ri+',this.value)"></td>');
+    for(let c=0;c<5;c++){
+      W('<td><input class="sched-input" value="'+esc(r.cells[c]||'')+'" onchange="setSched('+ri+','+c+',this.value)"></td>');
+    }
+    W('<td><button class="btn sm ghost" onclick="delSchedRow('+ri+')">×</button></td></tr>');
+  });
+  W('</tbody></table></div></div>');
+}
+function setSchedTime(i,v){S.schedule[i].time=v;save();}
+function setSched(r,c,v){S.schedule[r].cells[c]=v;save();}
+function addSchedRow(){S.schedule.push({time:'00:00-00:00',cells:['','','','','']});save();render();}
+function delSchedRow(i){S.schedule.splice(i,1);save();render();}
+function exportSched(){
+  let t='九小附属幼儿园 '+document.getElementById('classSel').value+' 一日作息时间表\n\n';
+  t+='时间\t'+DNAMES.join('\t')+'\n';
+  S.schedule.forEach(function(r){t+=r.time+'\t'+r.cells.join('\t')+'\n';});
+  download('作息时间表.txt',t);toast('已导出');
+}
+
+/* ============ 资料库 ============ */
+let libTab='file',fileKW='',fileCat='',matCat='',matKW='';
+const FCATS=['教案','课件','音乐','视频','图片','表格','其他'];
+function vLib(){
+  W('<div class="card" style="margin-bottom:14px"><div class="card-b row">');
+  W('<div class="seg">');
+  [['file','资料索引'],['mat','教学素材']].forEach(function(p){
+    W('<button class="'+(libTab===p[0]?'on':'')+'" onclick="libTab=\''+p[0]+'\';render()">'+p[1]+'</button>');
+  });
+  W('</div><div class="spacer"></div></div></div>');
+  if(libTab==='file')vFiles();else vMats();
+}
+function vFiles(){
+  W('<div class="card"><div class="card-h">');
+  W('<div class="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>'+
+    '<input class="input" placeholder="搜索名称 / 标签 / 备注" value="'+esc(fileKW)+'" oninput="fileKW=this.value;renderFiles()"></div>');
+  W('<select class="select" style="width:110px" onchange="fileCat=this.value;renderFiles()"><option value="">全部分类</option>'+
+    FCATS.map(function(c){return '<option'+(fileCat===c?' selected':'')+'>'+c+'</option>';}).join('')+'</select>');
+  W('<div class="spacer"></div>');
+  W('<button class="btn sm" onclick="batchFiles()">批量导入路径</button>');
+  W('<button class="btn sm primary" onclick="editFile(null)">添加资料</button>');
+  W('</div><div class="card-b" style="padding:0" id="fileWrap">'+fileTable()+'</div></div>');
+  W('<div class="tiny muted" style="margin-top:10px">把常用课件、音乐、表格的位置登记在这里，用时点「复制路径」粘到资源管理器地址栏即可打开。这里只存索引，不复制文件本身。</div>');
+}
+function fileTable(){
+  const kw=fileKW.trim();
+  const list=S.files.filter(function(f){
+    return (!fileCat||f.cat===fileCat)&&(!kw||(f.name+(f.tag||'')+(f.note||'')+(f.path||'')).indexOf(kw)>=0);
+  });
+  if(!list.length)return '<div class="empty">还没有登记资料。点「添加资料」或「批量导入路径」。</div>';
+  let h='<table class="tbl"><thead><tr><th style="width:200px">名称</th><th style="width:78px">分类</th><th>存放位置</th><th style="width:120px">标签</th><th style="width:160px"></th></tr></thead><tbody>';
+  list.forEach(function(f){
+    h+='<tr><td><div style="font-weight:600">'+esc(f.name)+'</div>'+(f.note?'<div class="tiny muted">'+esc(f.note)+'</div>':'')+'</td>'+
+      '<td><span class="pill n">'+esc(f.cat)+'</span></td>'+
+      '<td class="muted mono" style="font-size:12px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(f.path||'-')+'</td>'+
+      '<td class="muted">'+esc(f.tag||'-')+'</td>'+
+      '<td><button class="btn sm ghost" onclick="copyPath(\''+f.id+'\')">复制路径</button> '+
+      '<button class="btn sm ghost" onclick="editFile(\''+f.id+'\')">编辑</button></td></tr>';
+  });
+  return h+'</tbody></table>';
+}
+function renderFiles(){document.getElementById('fileWrap').innerHTML=fileTable();}
+function editFile(id){
+  const f=id?S.files.find(function(x){return x.id===id;}):{name:'',cat:'教案',path:'',tag:'',note:''};
+  let h='<div class="field"><label>资料名称</label><input class="input" data-k="name" value="'+esc(f.name||'')+'" placeholder="如：秋天主题课件"></div>';
+  h+='<div class="grid g2" style="gap:0 12px">'+
+     '<div class="field"><label>分类</label><select class="select" data-k="cat">'+
+     FCATS.map(function(c){return '<option'+(f.cat===c?' selected':'')+'>'+c+'</option>';}).join('')+'</select></div>'+
+     '<div class="field"><label>标签</label><input class="input" data-k="tag" value="'+esc(f.tag||'')+'" placeholder="秋天、公开课"></div></div>';
+  h+='<div class="field"><label>存放位置（完整路径）</label><input class="input" data-k="path" value="'+esc(f.path||'')+'" placeholder="E://教学资料//秋天主题.pptx"></div>';
+  h+='<div class="tiny muted" style="margin-top:-8px;margin-bottom:12px">在资源管理器地址栏复制，或按住 Shift 右键文件选「复制文件地址」</div>';
+  h+='<div class="field"><label>备注</label><textarea class="textarea" data-k="note" rows="2">'+esc(f.note||'')+'</textarea></div>';
+  openSheet(id?'编辑资料':'添加资料',h,'saveFile('+(id?'\''+id+'\'':'null')+')','保存',id?'delFile(\''+id+'\')':'');
+}
+function saveFile(id){
+  const g=function(k){const el=document.querySelector('[data-k="'+k+'"]');return el?el.value.trim():'';};
+  const n=g('name');if(!n)return toast('名称必填');
+  const o={name:n,cat:g('cat'),path:g('path'),tag:g('tag'),note:g('note'),date:today()};
+  if(id){const i=S.files.findIndex(function(x){return x.id===id;});S.files[i]=Object.assign({},S.files[i],o);}
+  else S.files.unshift(Object.assign({id:rid('f')},o));
+  save();closeDrawer();render();toast('已保存');
+}
+function delFile(id){if(!confirm('删除这条资料记录？文件本身不受影响。'))return;S.files=S.files.filter(function(x){return x.id!==id;});save();closeDrawer();render();}
+function copyPath(id){
+  const f=S.files.find(function(x){return x.id===id;});
+  if(!f||!f.path)return toast('未登记路径');
+  if(navigator.clipboard)navigator.clipboard.writeText(f.path);
+  toast('路径已复制，粘贴到资源管理器即可打开');
+}
+function batchFiles(){
+  let h='<div class="tiny muted" style="margin-bottom:10px">每行一条完整路径，回车分隔。可在资源管理器多选文件后按住 Shift 右键「复制文件地址」，粘贴到下面。</div>';
+  h+='<textarea class="textarea" data-k="batch" rows="10"></textarea>';
+  h+='<div class="field" style="margin-top:12px"><label>统一分类</label><select class="select" data-k="cat">'+
+     FCATS.map(function(c){return '<option>'+c+'</option>';}).join('')+'</select></div>';
+  openSheet('批量导入路径',h,'doBatchFiles()','导入');
+}
+function doBatchFiles(){
+  const g=function(k){const el=document.querySelector('[data-k="'+k+'"]');return el?el.value:'';};
+  const lines=g('batch').split(/\r?\n/).map(function(s){return s.trim().replace(/^"|"$/g,'');}).filter(Boolean);
+  if(!lines.length)return toast('没有有效路径');
+  let n=0;
+  lines.forEach(function(p){
+    const full=p.split(/[\\\/]/).pop()||p;
+    S.files.unshift({id:rid('f'),name:full.replace(/\.[^.]+$/,''),cat:g('cat')||'其他',path:p,tag:'',note:'',date:today()});
+    n++;
+  });
+  save();closeDrawer();render();toast('已导入 '+n+' 条');
+}
+function vMats(){
+  const cats=[];
+  S.materials.forEach(function(m){if(cats.indexOf(m.cat)<0)cats.push(m.cat);});
+  const kw=matKW.trim();
+  const list=S.materials.filter(function(m){
+    return (!matCat||m.cat===matCat)&&(!kw||(m.title+m.text).indexOf(kw)>=0);
+  });
+  W('<div class="card"><div class="card-h">');
+  W('<div class="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>'+
+    '<input class="input" placeholder="搜索儿歌 / 口令 / 游戏" value="'+esc(matKW)+'" oninput="matKW=this.value;renderMats()"></div>');
+  W('<div class="spacer"></div><button class="btn sm primary" onclick="editMat(null)">添加素材</button></div>');
+  W('<div class="card-b">');
+  W('<div class="row" style="margin-bottom:14px">');
+  W('<button class="btn sm '+(matCat===''?'primary':'')+'" onclick="matCat=\'\';render()">全部</button>');
+  cats.forEach(function(c){W('<button class="btn sm '+(matCat===c?'primary':'')+'" onclick="matCat=\''+c+'\';render()">'+esc(c)+'</button>');});
+  W('</div>');
+  W('<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px" id="matWrap">'+matCards(list)+'</div>');
+  W('</div></div>');
+}
+function matCards(list){
+  if(!list.length)return '<div class="empty" style="grid-column:1/-1">没有匹配的素材</div>';
+  let h='';
+  list.forEach(function(m){
+    h+='<div class="card" style="box-shadow:none"><div class="card-h" style="padding:12px 14px;min-height:0">'+
+      '<span class="pill b">'+esc(m.cat)+'</span><b style="font-size:13.5px">'+esc(m.title)+'</b><div class="spacer"></div>'+
+      '<button class="btn sm ghost" onclick="copyMat(\''+m.id+'\')">复制</button>'+
+      (m.builtin?'':'<button class="btn sm ghost" onclick="editMat(\''+m.id+'\')">编辑</button><button class="btn sm ghost" onclick="delMat(\''+m.id+'\')">×</button>')+
+      '</div><div class="card-b" style="padding:12px 14px"><div class="mat-text">'+esc(m.text)+'</div></div></div>';
+  });
+  return h;
+}
+function renderMats(){
+  const kw=matKW.trim();
+  const list=S.materials.filter(function(m){
+    return (!matCat||m.cat===matCat)&&(!kw||(m.title+m.text).indexOf(kw)>=0);
+  });
+  document.getElementById('matWrap').innerHTML=matCards(list);
+  const i=document.querySelector('.search .input');
+  if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}
+}
+function editMat(id){
+  const m=id?S.materials.find(function(x){return x.id===id;}):{cat:'儿歌',title:'',text:''};
+  let h='<div class="grid g2" style="gap:0 12px">'+
+    '<div class="field"><label>分类</label><input class="input" data-k="cat" value="'+esc(m.cat||'')+'" placeholder="儿歌 / 手指谣 / 口令"></div>'+
+    '<div class="field"><label>标题</label><input class="input" data-k="title" value="'+esc(m.title||'')+'"></div></div>';
+  h+='<div class="field"><label>内容</label><textarea class="textarea" data-k="text" rows="8">'+esc(m.text||'')+'</textarea></div>';
+  openSheet(id?'编辑素材':'添加素材',h,'saveMat('+(id?'\''+id+'\'':'null')+')','保存',id?'delMat(\''+id+'\')':'');
+}
+function saveMat(id){
+  const g=function(k){const el=document.querySelector('[data-k="'+k+'"]');return el?el.value.trim():'';};
+  const t=g('title');if(!t)return toast('标题必填');
+  const o={cat:g('cat')||'其他',title:t,text:g('text')};
+  if(id){const i=S.materials.findIndex(function(x){return x.id===id;});S.materials[i]=Object.assign({},S.materials[i],o);}
+  else S.materials.unshift(Object.assign({id:rid('m')},o));
+  save();closeDrawer();render();toast('已保存');
+}
+function delMat(id){if(!confirm('删除这条素材？'))return;S.materials=S.materials.filter(function(x){return x.id!==id;});save();closeDrawer();render();}
+function copyMat(id){
+  const m=S.materials.find(function(x){return x.id===id;});if(!m)return;
+  if(navigator.clipboard)navigator.clipboard.writeText(m.title+'\n'+m.text);
+  toast('已复制');
+}
+
+/* ============ boot ============ */
+load();
+document.querySelectorAll('.nav-item').forEach(b=>b.onclick=()=>go(b.dataset.view));
+document.getElementById('classSel').onchange=render;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+render();
+</script>
+</body>
+</html>
